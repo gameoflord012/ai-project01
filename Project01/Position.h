@@ -23,9 +23,9 @@ namespace std
     {
         std::size_t operator()(const Position& p) const {
             size_t hashResult = 0;
+            hash_combine(hashResult, p.x);
             hash_combine(hashResult, p.y);
             hash_combine(hashResult, p.z);
-            hash_combine(hashResult, p.x);
             return hashResult;
         }
     };

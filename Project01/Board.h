@@ -40,7 +40,7 @@ struct Board
         return (p.z * dim.x + p.x) * dim.y + p.y;
     }
 
-    Position getPosition(int index)
+    Position getPosition(int index) const
     {
         return { index / dim.y % dim.x, index % dim.y, index / dim.y / dim.x };
     }

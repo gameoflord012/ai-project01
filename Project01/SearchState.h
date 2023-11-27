@@ -10,13 +10,14 @@
 
 struct SearchState
 {
-    Position agentPositions[MAX_AGENT_COUNT];
+    int agentIndexes[MAX_AGENT_COUNT];
     int keyMasks[MAX_AGENT_COUNT];
     int cost;
 
     std::size_t operator()(const SearchState& searchState);
-    bool operator==(const SearchState& other);
 };
+
+bool operator==(const SearchState& left, const SearchState& right);
 
 namespace std
 {
@@ -25,7 +26,7 @@ namespace std
     {
         std::size_t operator()(const SearchState& searchState) const {
             size_t hashValue = 0;
-            for (const Position &e : searchState.agentPositions) hash_combine(hashValue, e);
+            for (int e : searchState.agentIndexes) hash_combine(hashValue, e);
             for (int e : searchState.keyMasks) hash_combine(hashValue, e);
             return hashValue;
         }

@@ -7,6 +7,7 @@
 #include <cassert>
 #include <memory>
 #include <queue>
+#include <unordered_set>
 
 #define MAX_BOARD_HEIGHT 3
 #define MAX_AGENT_COUNT 9
@@ -24,10 +25,12 @@ typedef MinHeap<HeapType> SearchHeap;
 
 void search(const Board& board)
 {
-#pragma region INIT
-    vector<int> agentIndexList, targetIndexList;
-    agentIndexList.resize(MAX_AGENT_COUNT, -1);
-    targetIndexList.resize(MAX_AGENT_COUNT, -1);
+#pragma region READ_BOARD
+    printf("\nStart Searching ...");
+
+    int agentIndexList[MAX_AGENT_COUNT], targetIndexList[MAX_AGENT_COUNT];
+    fill(agentIndexList, agentIndexList + MAX_AGENT_COUNT, -1);
+    fill(targetIndexList, targetIndexList + MAX_AGENT_COUNT, -1);
 
     for (int i = 0; i < board.gridData.size(); i++)
     {
@@ -49,50 +52,77 @@ void search(const Board& board)
     printf("\n");
     for (int e : targetIndexList) printf("%d ", e);
 #pragma endregion
-    SearchHeap searchHeap;
-    vector<SearchState> searchStateList;
-
+    
+#pragma region DECLARE_VALUES
+    SearchHeap openedList;
+    unordered_set < SearchState, hash<SearchState> > closedList;
+    vector<SearchState> searchDataList;
 
     const int DIR_X[] = { 0, 0, 1, -1,  0, -1,  1, -1, 1 };
     const int DIR_Y[] = { 0, 1, 0,  0, -1,  1, -1, -1, 1 };
     const int DIR_SIZE = 5;
+#pragma endregion  
 
-    while (searchHeap.size() > 0)
+#pragma region INIT_OPENED_LIST
+    SearchState initialState;
+    for (int i = 0; i < MAX_AGENT_COUNT; i++)
     {
-        HeapType top = searchHeap.top();
-        searchHeap.pop();
+        initialState.agentIndexes[i] = agentIndexList[i];
+        initialState.keyMasks[i] = 0;
+    }
 
-        SearchState state = searchStateList[top.second];
+    initialState.cost = 0;
+
+    searchDataList.push_back(initialState);
+    openedList.push({ 0, 0 });
+#pragma endregion
+
+    while (openedList.size() > 0)
+    {
+        HeapType top = openedList.top();
+        openedList.pop();
+
+        SearchState state = searchDataList[top.second];
+        if (closedList.count(state) > 0) continue;
+        else
+        {
+            closedList.insert(state);
+        }
 
         for (int iagent = 0; iagent < MAX_AGENT_COUNT; iagent++)
         {
             if (agentIndexList[iagent] == -1) continue;
+            if (state.agentIndexes[iagent] == -1) continue;
+
+            Position agentPosition = board.getPosition(state.agentIndexes[iagent]);
 
             for (int idir = 0; idir < DIR_SIZE; idir++)
             {
                 SearchState nextState = state;
 
-                Position nextPos = {
-                    state.agentPositions[iagent].x + DIR_X[idir],
-                    state.agentPositions[iagent].y + DIR_Y[idir],
-                    state.agentPositions[iagent].z
+                Position nextAgentPosition = {
+                    agentPosition.x + DIR_X[idir],
+                    agentPosition.y + DIR_Y[idir],
+                    agentPosition.z
                 };
 
-                if (board.isCell(nextPos, OBSTACLE))
+                if (board.getIndex(nextAgentPosition) == -1) continue;
+
+                if (board.isCell(nextAgentPosition, OBSTACLE))
                 {
                     continue;
                 }
 
-                if (board.isCell(nextPos, FLOOR))
+                if (board.isCell(nextAgentPosition, FLOOR))
                 {
                     // GO FUCKING THERE
 
-                    state.agentPositions[iagent] = nextPos;
-                    state.cost += 1;
+                    nextState.agentIndexes[iagent] = board.getIndex(nextAgentPosition);
+                    nextState.cost += 1;
                 }
 
-                searchStateList.push_back(state);
-                searchHeap.push({ state.cost, searchStateList.size() - 1 });
+                searchDataList.push_back(nextState);
+                openedList.push({ nextState.cost, searchDataList.size() - 1 });
             }
         }
     }

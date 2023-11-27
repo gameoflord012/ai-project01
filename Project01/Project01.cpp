@@ -8,136 +8,17 @@
 #include <memory>
 #include <queue>
 
-#pragma region DEFINE
+#define MAX_BOARD_HEIGHT 3
+#define MAX_AGENT_COUNT 9
 
-#define ROUND_INT(x) ((int)(x + 0.5f))
-#define STRING_EQUAL(x, y) (strcmp(x, y) == 0)
-#define GET_MASK(X, Y) ((1 << X << 4) | Y)
-#define wrap_fscanf_s(...) { if(fscanf_s(__VA_ARGS__) == 0) { printf("invalid input"); assert(false); exit(0); } }
+#include "Position.h"
+#include "Board.h"
+#include "SearchState.h"
 
-#define MIN_HEAP(T) 
 using namespace std;
 
-using byte = char;
 template <typename T>
 using MinHeap = std::priority_queue<T, std::vector<T>, std::greater<T>>;
-
-const int MAX_BOARD_HEIGHT = 3;
-const int MAX_AGENT_COUNT = 9;
-
-#pragma endregion
-
-#pragma region STRUCT_AND_CLASS
-struct Position
-{
-    int x, y, z;
-};
-
-struct SearchState
-{
-    Position agentPositions[MAX_AGENT_COUNT];
-    int keyMasks[MAX_AGENT_COUNT];
-    int cost;
-
-    std::size_t operator()(const SearchState& element) const {
-        // You can use a hash function appropriate for your specific type
-        return std::hash<int>()(*agentPositions);
-    }
-};
-
-enum BoardCell
-{
-    FLOOR,
-    AGENT,
-    TARGET,
-    DOOR,
-    KEY,
-    OBSTACLE,
-    STAIR_UP,
-    STAIR_DOWN,
-};
-#pragma endregion
-
-struct Board
-{
-    Board(int nRows, int nCols, int nHeight = MAX_BOARD_HEIGHT)
-    {
-        dim.x = nRows;
-        dim.y = nCols;
-        dim.z = nHeight;
-
-        gridData.resize(dim.x * dim.y * dim.z);
-    }
-
-    int getIndex(Position p) const
-    {
-        if (p.x < 0 || p.x >= dim.x ||
-            p.y < 0 || p.y >= dim.y ||
-            p.z < 0 || p.z >= dim.z) return -1;
-
-        return (p.z * dim.x + p.x) * dim.y + p.y;
-    }
-
-    Position getPosition(int index)
-    {
-        return { index / dim.y % dim.x, index % dim.y, index / dim.y / dim.x };
-    }
-
-    void setBoardData(Position p, int value)
-    {
-        gridData[getIndex(p)] = value;
-    }
-
-    void setBoardData(Position p, const char * value)
-    {
-        gridData[getIndex(p)] = getValue(value);
-    }
-
-    int getBoardData(Position p)
-    {
-        return gridData[getIndex(p)];
-    }
-
-    int getValue(const char* raw)
-    {
-        if (STRING_EQUAL(raw, "-1")) return OBSTACLE;
-        else if (STRING_EQUAL(raw, "0")) return FLOOR;
-        else if (raw[0] == 'A') return GET_MASK(raw[1] - '1', AGENT);
-        else if (raw[0] == 'T') return GET_MASK(raw[1] - '1', TARGET);
-        else if (raw[0] == 'K') return GET_MASK(raw[1] - '1', KEY);
-        else if (raw[0] == 'D') return GET_MASK(raw[1] - '1', DOOR);
-    }
-
-    void printBoard()
-    {
-        for (int k = 0; k < dim.z; k++)
-        {
-            printf("\nfloor %d", k);
-            for (int i = 0; i < dim.x; i++)
-            {
-                printf("\n");
-                for (int j = 0; j < dim.y; j++)
-                {
-                    printf("%d ", gridData[getIndex({ i, j, k })]);
-                }
-            }
-        }
-    }
-
-    bool isCell(Position p, BoardCell c) const
-    {
-        if (getIndex(p) < 0) return false;
-        return (gridData[getIndex(p)] & 0xF) == c;
-    }
-
-    vector<int> gridData;
-    Position dim;
-};
-
-#pragma region VARIABLES
-
-#pragma endregion
-
 typedef pair<int, int> HeapType;
 typedef MinHeap<HeapType> SearchHeap;
 

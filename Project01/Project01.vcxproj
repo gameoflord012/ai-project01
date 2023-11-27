@@ -140,6 +140,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Project01.cpp" />
+    <ClCompile Include="SearchState.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Board.h" />
+    <ClInclude Include="HashUtils.h" />
+    <ClInclude Include="Helpers.h" />
+    <ClInclude Include="Position.h" />
+    <ClInclude Include="SearchState.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -25,6 +25,8 @@ typedef MinHeap<HeapType> SearchHeap;
 
 bool search(const Board& board, vector<SearchState> &stateDataList, SearchState& returnSearchState)
 {
+    NEW_PRINT_SECTION(SEARCHING)
+
 #pragma region READ_BOARD
     printf("\nStart Searching ...");
 
@@ -178,6 +180,14 @@ bool search(const Board& board, vector<SearchState> &stateDataList, SearchState&
     return false;
 }
 
+void printPathTrace(const Board& board, const vector<SearchState>& stateData, const SearchState& traceState)
+{
+    if (traceState.parentStateIndex != -1) 
+        printPathTrace(board, stateData, stateData[traceState.parentStateIndex]);
+
+    Position p = board.getPosition(traceState.agentIndexes[0]);
+    printf("\nFloor %2d, ROW = %3d, COL = %3d", p.z, p.x, p.y);
+}
 
 int main()
 {
@@ -200,6 +210,10 @@ int main()
 
     char buffer[50];
     int curBoardZ = 0;
+
+    NEW_PRINT_SECTION(INPUT);
+    printf("\nRead inputs:");
+
     while (fscanf_s(inputFile, "\n[%[^]]]", buffer, sizeof(buffer)) != EOF)
     {
         printf("\n%s\n", buffer);
@@ -225,9 +239,15 @@ int main()
     vector<SearchState> searchDataList;
     SearchState searchResult;
 
-    if (search(*board, searchDataList, searchResult))
+    bool isSearchSuccess = search(*board, searchDataList, searchResult);
+
+    NEW_PRINT_SECTION(RESULT)
+    if (isSearchSuccess)
     {
         printf("\ncost of search: %d", searchResult.cost);
+
+        printf("\npath go:");
+        printPathTrace(*board, searchDataList, searchResult);
     }
     else
     {

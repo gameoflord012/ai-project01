@@ -78,15 +78,17 @@ struct Board
 
     void printBoard()
     {
+        NEW_PRINT_SECTION(BOARD INITIALIZATION)
+        printf("\nGenerated board value: ");
         for (int k = 0; k < dim.z; k++)
         {
-            printf("\nfloor %d", k);
+            printf("\nfloor %2d", k);
             for (int i = 0; i < dim.x; i++)
             {
                 printf("\n");
                 for (int j = 0; j < dim.y; j++)
                 {
-                    printf("%d ", gridData[getIndex({ i, j, k })]);
+                    printf("%3d|", gridData[getIndex({ i, j, k })]);
                 }
             }
         }

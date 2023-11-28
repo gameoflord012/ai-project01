@@ -118,20 +118,39 @@ bool search(const Board& board, vector<SearchState> &stateDataList, SearchState&
                     agentPosition.z
                 };
 
+#pragma region CHECK_INVALID_NEXT_POSITION
                 if (board.getIndex(nextAgentPosition) == -1) continue;
 
                 if (board.isCell(nextAgentPosition, OBSTACLE))
                 {
                     continue;
                 }
+#pragma endregion
 
-                if (board.isCell(nextAgentPosition, FLOOR) || 
-                    board.isCell(nextAgentPosition, TARGET) ||
-                    board.isCell(nextAgentPosition, AGENT))
+#pragma region UPDATE_STAIR_POSITION
+                if (DIR_X[idir] == 0 and DIR_Y[idir] == 0)
                 {
-                    // GO FUCKING THERE
+                    if (board.isCell(nextAgentPosition, STAIR_UP))
+                    {
+                        nextAgentPosition.z += 1;
+                    }
+                    else if (board.isCell(nextAgentPosition, STAIR_DOWN))
+                    {
+                        nextAgentPosition.z -= 1;
+                    }
+                }
 
-                    nextState.agentIndexes[iagent] = board.getIndex(nextAgentPosition);
+                if (board.getIndex(nextAgentPosition) == -1) //out of board
+                {
+                    continue;
+                }
+#pragma endregion
+
+                bool isTileValid = not board.isCell(nextAgentPosition, OBSTACLE);
+
+                if (isTileValid)
+                {
+                    nextState.agentIndexes[iagent] = board.getIndex(nextAgentPosition); // update new state
                 }
 
                 stateDataList.push_back(nextState);

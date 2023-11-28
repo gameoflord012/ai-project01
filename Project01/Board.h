@@ -62,8 +62,10 @@ struct Board
 
     int getValue(const char* raw)
     {
-        if (STRING_EQUAL(raw, "-1")) return OBSTACLE;
-        else if (STRING_EQUAL(raw, "0")) return FLOOR;
+        if (STRING_EQUAL(raw, "-1"))        return OBSTACLE;
+        else if (STRING_EQUAL(raw, "0"))    return FLOOR;
+        else if (STRING_EQUAL(raw, "UP"))   return STAIR_UP;
+        else if (STRING_EQUAL(raw, "DO"))   return STAIR_DOWN;
         else if (raw[0] == 'A') return GET_MASK(raw[1] - '1', AGENT);
         else if (raw[0] == 'T') return GET_MASK(raw[1] - '1', TARGET);
         else if (raw[0] == 'K') return GET_MASK(raw[1] - '1', KEY);

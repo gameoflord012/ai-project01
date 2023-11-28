@@ -146,11 +146,27 @@ bool search(const Board& board, vector<SearchState> &stateDataList, SearchState&
                 }
 #pragma endregion
 
-                bool isTileValid = not board.isCell(nextAgentPosition, OBSTACLE);
+#pragma region UPDATE_KEY_MASK
+                if (board.isCell(nextAgentPosition, KEY))
+                {
+                    nextState.keyMasks[iagent] |= GET_MASK(board.getBoardValue(nextAgentPosition));
+                }
+#pragma endregion
+
+                bool noObstacle = not board.isCell(nextAgentPosition, OBSTACLE);
+                bool noDoorOrHasKey =
+                    not board.isCell(nextAgentPosition, DOOR) or
+                    VALUE_CONTAIN_MASK(board.getBoardValue(nextAgentPosition), nextState.keyMasks[iagent]);
+
+                bool isTileValid = noObstacle and noDoorOrHasKey;
 
                 if (isTileValid)
                 {
                     nextState.agentIndexes[iagent] = board.getIndex(nextAgentPosition); // update new state
+                }
+                else
+                {
+                    continue;
                 }
 
                 stateDataList.push_back(nextState);

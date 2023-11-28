@@ -4,6 +4,10 @@
 #include "Position.h"
 #include "Helpers.h"
 
+#define GET_BOARD_VALUE(X, Y) ((1 << X << 4) | Y)
+#define GET_MASK(X) (X >> 4)
+#define VALUE_CONTAIN_MASK(V, M) (((V >> 4) & M) != 0)
+
 #ifndef MAX_BOARD_HEIGHT
 #define MAX_BOARD_HEIGHT 10
 #endif // !MAX_BOARD_HEIGHT
@@ -55,7 +59,7 @@ struct Board
         gridData[getIndex(p)] = getValue(value);
     }
 
-    int getBoardData(Position p)
+    int getBoardValue(Position p) const
     {
         return gridData[getIndex(p)];
     }
@@ -66,10 +70,10 @@ struct Board
         else if (STRING_EQUAL(raw, "0"))    return FLOOR;
         else if (STRING_EQUAL(raw, "UP"))   return STAIR_UP;
         else if (STRING_EQUAL(raw, "DO"))   return STAIR_DOWN;
-        else if (raw[0] == 'A') return GET_MASK(raw[1] - '1', AGENT);
-        else if (raw[0] == 'T') return GET_MASK(raw[1] - '1', TARGET);
-        else if (raw[0] == 'K') return GET_MASK(raw[1] - '1', KEY);
-        else if (raw[0] == 'D') return GET_MASK(raw[1] - '1', DOOR);
+        else if (raw[0] == 'A') return GET_BOARD_VALUE(raw[1] - '1', AGENT);
+        else if (raw[0] == 'T') return GET_BOARD_VALUE(raw[1] - '1', TARGET);
+        else if (raw[0] == 'K') return GET_BOARD_VALUE(raw[1] - '1', KEY);
+        else if (raw[0] == 'D') return GET_BOARD_VALUE(raw[1] - '1', DOOR);
     }
 
     void printBoard()

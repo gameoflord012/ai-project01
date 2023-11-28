@@ -23,7 +23,7 @@ using MinHeap = std::priority_queue<T, std::vector<T>, std::greater<T>>;
 typedef pair<int, int> HeapType;
 typedef MinHeap<HeapType> SearchHeap;
 
-void search(const Board& board)
+bool search(const Board& board, vector<SearchState> &stateDataList, SearchState& returnSearchState)
 {
 #pragma region READ_BOARD
     printf("\nStart Searching ...");
@@ -56,12 +56,12 @@ void search(const Board& board)
 #pragma region DECLARE_VALUES
     SearchHeap openedList;
     unordered_set < SearchState, hash<SearchState> > closedList;
-    vector<SearchState> searchDataList;
+    stateDataList.clear();
 
     const int DIR_X[] = { 0, 0, 1, -1,  0, -1,  1, -1, 1 };
     const int DIR_Y[] = { 0, 1, 0,  0, -1,  1, -1, -1, 1 };
     const int DIR_SIZE = 5;
-#pragma endregion  
+#pragma endregion
 
 #pragma region INIT_OPENED_LIST
     SearchState initialState;
@@ -72,8 +72,9 @@ void search(const Board& board)
     }
 
     initialState.cost = 0;
+    initialState.stateIndex = 0;
 
-    searchDataList.push_back(initialState);
+    stateDataList.push_back(initialState);
     openedList.push({ 0, 0 });
 #pragma endregion
 
@@ -82,12 +83,20 @@ void search(const Board& board)
         HeapType top = openedList.top();
         openedList.pop();
 
-        SearchState state = searchDataList[top.second];
+#pragma region CHECK_STATE_CLOSED_OR_GOAL_STATE
+        SearchState state = stateDataList[top.second];
         if (closedList.count(state) > 0) continue;
         else
         {
             closedList.insert(state);
         }
+
+        if (state.agentIndexes[0] == targetIndexList[0]) //A1 arrived T1
+        {
+            returnSearchState = state;
+            return true;
+        }
+#pragma endregion
 
         for (int iagent = 0; iagent < MAX_AGENT_COUNT; iagent++)
         {
@@ -99,6 +108,9 @@ void search(const Board& board)
             for (int idir = 0; idir < DIR_SIZE; idir++)
             {
                 SearchState nextState = state;
+                nextState.cost += 1;
+                nextState.stateIndex = stateDataList.size();
+                nextState.parentStateIndex = state.stateIndex;
 
                 Position nextAgentPosition = {
                     agentPosition.x + DIR_X[idir],
@@ -113,19 +125,22 @@ void search(const Board& board)
                     continue;
                 }
 
-                if (board.isCell(nextAgentPosition, FLOOR))
+                if (board.isCell(nextAgentPosition, FLOOR) || 
+                    board.isCell(nextAgentPosition, TARGET) ||
+                    board.isCell(nextAgentPosition, AGENT))
                 {
                     // GO FUCKING THERE
 
                     nextState.agentIndexes[iagent] = board.getIndex(nextAgentPosition);
-                    nextState.cost += 1;
                 }
 
-                searchDataList.push_back(nextState);
-                openedList.push({ nextState.cost, searchDataList.size() - 1 });
+                stateDataList.push_back(nextState);
+                openedList.push({ nextState.cost, stateDataList.size() - 1 });
             }
         }
     }
+
+    return false;
 }
 
 
@@ -172,5 +187,16 @@ int main()
     fclose(inputFile);
 #pragma endregion   
 
-    search(*board);
+    vector<SearchState> searchDataList;
+    SearchState searchResult;
+
+    if (search(*board, searchDataList, searchResult))
+    {
+        printf("\ncost of search: %d", searchResult.cost);
+    }
+    else
+    {
+        printf("\nno solution found");
+    }
+    
 }

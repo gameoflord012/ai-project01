@@ -12,7 +12,10 @@ struct SearchState
 {
     int agentIndexes[MAX_AGENT_COUNT];
     int keyMasks[MAX_AGENT_COUNT];
-    int cost;
+    int cost = 0;
+
+    int stateIndex = -1;
+    int parentStateIndex = -1;
 
     std::size_t operator()(const SearchState& searchState);
 };

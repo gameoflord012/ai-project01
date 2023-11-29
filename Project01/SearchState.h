@@ -3,6 +3,7 @@
 #include <functional>
 #include <vector>
 
+#include "Board.h"
 #include "Position.h"
 
 #ifndef MAX_AGENT_COUNT
@@ -25,6 +26,8 @@ struct SearchState
     std::vector<int> agentDesiredTargets[MAX_AGENT_COUNT];
 
     std::size_t operator()(const SearchState& searchState);
+
+    int getHeuristicValue(const Board& board);
 };
 
 bool operator==(const SearchState& left, const SearchState& right);
@@ -34,7 +37,7 @@ struct SearchResultData
     std::vector<SearchState> stateData;
     SearchState finalState;
     
-    float timeElapsedInMiniSeconds = 0;
+    size_t timeElapsedInMiniSeconds = 0;
 
     int getPathCost()
     {

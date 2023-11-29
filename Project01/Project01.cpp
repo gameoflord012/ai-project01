@@ -196,7 +196,7 @@ bool search(const Board& board, SearchResultData& resultData)
                 }
 
                 stateDataList.push_back(nextState);
-                openedList.push({ nextState.cost, stateDataList.size() - 1 });
+                openedList.push({ nextState.cost + nextState.getHeuristicValue(board), stateDataList.size() - 1 });
             }
         }
     }

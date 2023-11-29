@@ -1,11 +1,16 @@
 #pragma once
 
 #include <functional>
+#include <vector>
 
 #include "Position.h"
 
 #ifndef MAX_AGENT_COUNT
 #define MAX_AGENT_COUNT 9
+#endif // !MAX_AGENT_COUNT
+
+#ifndef MAX_AGENT_COUNT
+#define MAX_KEY_COUNT 9
 #endif // !MAX_AGENT_COUNT
 
 struct SearchState
@@ -16,6 +21,8 @@ struct SearchState
 
     int stateIndex = -1;
     int parentStateIndex = -1;
+
+    std::vector<int> desiredTargets;
 
     std::size_t operator()(const SearchState& searchState);
 };
@@ -31,6 +38,7 @@ namespace std
             size_t hashValue = 0;
             for (int e : searchState.agentIndexes) hash_combine(hashValue, e);
             for (int e : searchState.keyMasks) hash_combine(hashValue, e);
+            for (int e : searchState.desiredTargets) hash_combine(hashValue, e);
             return hashValue;
         }
     };

@@ -8,6 +8,7 @@
 #include <memory>
 #include <queue>
 #include <unordered_set>
+#include <algorithm>
 
 #define MAX_BOARD_HEIGHT 3
 #define MAX_AGENT_COUNT 9
@@ -27,34 +28,6 @@ bool search(const Board& board, vector<SearchState> &stateDataList, SearchState&
 {
     NEW_PRINT_SECTION(SEARCHING)
 
-#pragma region READ_BOARD
-    printf("\nStart Searching ...");
-
-    int agentIndexList[MAX_AGENT_COUNT], targetIndexList[MAX_AGENT_COUNT];
-    fill(agentIndexList, agentIndexList + MAX_AGENT_COUNT, -1);
-    fill(targetIndexList, targetIndexList + MAX_AGENT_COUNT, -1);
-
-    for (int i = 0; i < board.gridData.size(); i++)
-    {
-        int value = board.gridData[i];
-        if ((value & 0xF) == AGENT)
-        {
-            int p = ROUND_INT(log2(value >> 4));
-            agentIndexList[p] = i;
-        }
-        else if ((value & 0xF) == TARGET)
-        {
-            int p = ROUND_INT(log2(value >> 4));
-            targetIndexList[p] = i;
-        }
-    }
-
-    printf("\n");
-    for (int e : agentIndexList) printf("%d ", e);
-    printf("\n");
-    for (int e : targetIndexList) printf("%d ", e);
-#pragma endregion
-    
 #pragma region DECLARE_VALUES
     SearchHeap openedList;
     unordered_set < SearchState, hash<SearchState> > closedList;
@@ -63,18 +36,22 @@ bool search(const Board& board, vector<SearchState> &stateDataList, SearchState&
     const int DIR_X[] = { 0, 0, 1, -1,  0, -1,  1, -1, 1 };
     const int DIR_Y[] = { 0, 1, 0,  0, -1,  1, -1, -1, 1 };
     const int DIR_SIZE = 5;
+
+    BoardData boardData = board.getBoardData();
+    boardData.printBoardData();
 #pragma endregion
 
 #pragma region INIT_OPENED_LIST
     SearchState initialState;
     for (int i = 0; i < MAX_AGENT_COUNT; i++)
     {
-        initialState.agentIndexes[i] = agentIndexList[i];
+        initialState.agentIndexes[i] = boardData.agentIndexList[i];
         initialState.keyMasks[i] = 0;
     }
 
     initialState.cost = 0;
     initialState.stateIndex = 0;
+    initialState.desiredTargets.push_back(boardData.targetIndexList[0]);
 
     stateDataList.push_back(initialState);
     openedList.push({ 0, 0 });
@@ -93,7 +70,7 @@ bool search(const Board& board, vector<SearchState> &stateDataList, SearchState&
             closedList.insert(state);
         }
 
-        if (state.agentIndexes[0] == targetIndexList[0]) //A1 arrived T1
+        if (state.desiredTargets.size() == 0) //A1 arrived T1
         {
             returnSearchState = state;
             return true;
@@ -102,7 +79,7 @@ bool search(const Board& board, vector<SearchState> &stateDataList, SearchState&
 
         for (int iagent = 0; iagent < MAX_AGENT_COUNT; iagent++)
         {
-            if (agentIndexList[iagent] == -1) continue;
+            if (boardData.agentIndexList[iagent] == -1) continue;
             if (state.agentIndexes[iagent] == -1) continue;
 
             Position agentPosition = board.getPosition(state.agentIndexes[iagent]);
@@ -120,10 +97,12 @@ bool search(const Board& board, vector<SearchState> &stateDataList, SearchState&
                     agentPosition.z
                 };
 
+                int nextAgentIndex = board.getIndex(nextAgentPosition);
+
 #pragma region CHECK_INVALID_NEXT_POSITION
                 if (board.getIndex(nextAgentPosition) == -1) continue;
 
-                if (board.isCell(nextAgentPosition, OBSTACLE))
+                if (board.isTile(nextAgentPosition, OBSTACLE))
                 {
                     continue;
                 }
@@ -132,43 +111,58 @@ bool search(const Board& board, vector<SearchState> &stateDataList, SearchState&
 #pragma region UPDATE_STAIR_POSITION
                 if (DIR_X[idir] == 0 and DIR_Y[idir] == 0)
                 {
-                    if (board.isCell(nextAgentPosition, STAIR_UP))
+                    if (board.isTile(nextAgentPosition, STAIR_UP))
                     {
                         nextAgentPosition.z += 1;
                     }
-                    else if (board.isCell(nextAgentPosition, STAIR_DOWN))
+                    else if (board.isTile(nextAgentPosition, STAIR_DOWN))
                     {
                         nextAgentPosition.z -= 1;
                     }
                 }
 
-                if (board.getIndex(nextAgentPosition) == -1) //out of board
+                if (nextAgentIndex == -1) //out of board
                 {
                     continue;
                 }
 #pragma endregion
 
 #pragma region UPDATE_KEY_MASK
-                if (board.isCell(nextAgentPosition, KEY))
+                if (board.isTile(nextAgentPosition, KEY))
                 {
                     nextState.keyMasks[iagent] |= GET_MASK(board.getBoardValue(nextAgentPosition));
                 }
 #pragma endregion
 
-                bool noObstacle = not board.isCell(nextAgentPosition, OBSTACLE);
+                bool noObstacle = not board.isTile(nextAgentPosition, OBSTACLE);
+                int tileValue = board.getBoardValue(nextAgentPosition);
+
                 bool noDoorOrHasKey =
-                    not board.isCell(nextAgentPosition, DOOR) or
-                    VALUE_CONTAIN_MASK(board.getBoardValue(nextAgentPosition), nextState.keyMasks[iagent]);
+                    not board.isTile(nextAgentPosition, DOOR) or
+                    VALUE_CONTAIN_MASK(tileValue, nextState.keyMasks[iagent]);
 
                 bool isTileValid = noObstacle and noDoorOrHasKey;
 
                 if (isTileValid)
                 {
                     nextState.agentIndexes[iagent] = board.getIndex(nextAgentPosition); // update new state
+                    if (nextState.desiredTargets.size() > 0 && nextState.desiredTargets.back() == nextAgentIndex) //Arrive most recent desire target
+                    {
+                        nextState.desiredTargets.pop_back();
+                    }
                 }
                 else
                 {
-                    continue;
+                    if (board.isTile(nextAgentPosition, DOOR) and not noDoorOrHasKey) //Step on door tile but have to key for the door
+                    {
+                        int requiredKey = GET_MASK_INDEX(tileValue);
+                        int desireIndex = boardData.keyIndexList[requiredKey];
+
+                        if (COUNT(nextState.desiredTargets, desireIndex) == 0)
+                        {
+                            nextState.desiredTargets.push_back(desireIndex);
+                        }
+                    }
                 }
 
                 stateDataList.push_back(nextState);

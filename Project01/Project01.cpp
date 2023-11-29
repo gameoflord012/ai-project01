@@ -166,7 +166,17 @@ bool search(const Board& board, SearchResultData& resultData)
                     not board.isTile(nextAgentPosition, DOOR) or
                     VALUE_CONTAIN_MASK(tileValue, nextState.keyMasks[iagent]);
 
-                bool isTileValid = noObstacle and noDoorOrHasKey;
+                bool anotherAgentOccured = false;
+                for (int jagent = 0; jagent < MAX_AGENT_COUNT; jagent++)
+                {
+                    if (iagent != jagent && nextAgentIndex == state.agentIndexes[jagent])
+                    {
+                        anotherAgentOccured = true;
+                        break;
+                    }
+                }
+
+                bool isTileValid = noObstacle and noDoorOrHasKey and not anotherAgentOccured;
 
                 if (isTileValid)
                 {
@@ -233,10 +243,10 @@ int main()
         return -1;
     }
 
-    wrap_fscanf_s(inputFile, "%d,", &nCols);
-    wrap_fscanf_s(inputFile, "%d", &nRows);
+    wrap_fscanf_s(inputFile, "%d,", &nRows);
+    wrap_fscanf_s(inputFile, "%d", &nCols);
 
-    board = make_shared<Board>(nCols, nRows);
+    board = make_shared<Board>(nRows, nCols);
 
     char buffer[50];
     int curBoardZ = 0;

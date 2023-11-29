@@ -21,6 +21,8 @@
 #define MAX_KEY_COUNT 9
 #endif // !MAX_KEY_COUNT
 
+using namespace std;
+
 enum BoardTile
 {
     FLOOR,

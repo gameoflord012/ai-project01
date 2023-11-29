@@ -22,12 +22,37 @@ struct SearchState
     int stateIndex = -1;
     int parentStateIndex = -1;
 
-    std::vector<int> desiredTargets[MAX_AGENT_COUNT];
+    std::vector<int> agentDesiredTargets[MAX_AGENT_COUNT];
 
     std::size_t operator()(const SearchState& searchState);
 };
 
 bool operator==(const SearchState& left, const SearchState& right);
+
+struct SearchResultData
+{
+    std::vector<SearchState> stateData;
+    SearchState finalState;
+    
+    float timeElapsedInMiniSeconds = 0;
+
+    int getPathCost()
+    {
+        return finalState.cost;
+    }
+
+    int getSearchStateCount()
+    {
+        return stateData.size();
+    }
+
+    void printResult()
+    {
+        printf("\nSearch State Count: %d", getSearchStateCount());
+        printf("\nPath cost: %d", getPathCost());
+        printf("\nTime elapsed: %f miliseconds", timeElapsedInMiniSeconds);
+    }
+};
 
 namespace std
 {
@@ -41,7 +66,7 @@ namespace std
 
             for (int i = 0; i < MAX_AGENT_COUNT; i++)
             {
-                for (int e : searchState.desiredTargets[i]) hash_combine(hashValue, e);
+                for (int e : searchState.agentDesiredTargets[i]) hash_combine(hashValue, e);
             }
 
             return hashValue;

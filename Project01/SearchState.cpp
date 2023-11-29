@@ -16,8 +16,8 @@ bool operator==(const SearchState& left, const SearchState& right)
     
     for (int i = 0; i < MAX_AGENT_COUNT; i++)
     {
-        if (left.desiredTargets[i].size() != right.desiredTargets[i].size()) return false;
-        if (left.desiredTargets[i] != right.desiredTargets[i]) return false;
+        if (left.agentDesiredTargets[i].size() != right.agentDesiredTargets[i].size()) return false;
+        if (left.agentDesiredTargets[i] != right.agentDesiredTargets[i]) return false;
     }
     return true;
 }

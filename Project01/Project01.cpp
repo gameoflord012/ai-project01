@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <chrono>
    
-#define MAX_BOARD_HEIGHT 3
+#define MAX_BOARD_HEIGHT 10
 #define MAX_AGENT_COUNT 9
 
 #include "Position.h"
@@ -256,22 +256,23 @@ int main()
 
     while (fscanf_s(inputFile, "\n[%[^]]]", buffer, sizeof(buffer)) != EOF)
     {
-        printf("\n%s\n", buffer);
+        printf("\n%s", buffer);
         for (int i = 0; i < nRows; i++)
         {
+            printf("\n");
             for (int j = 0; j < nCols; j++)
             {
                 fscanf_s(inputFile, "%[, \n]", buffer, sizeof(buffer));
                 wrap_fscanf_s(inputFile, "%[^, \n]", buffer, sizeof(buffer));
 
                 board->setBoardData({ i, j, curBoardZ }, buffer);
-                printf("%s|", buffer);
+                printf("%2s|", buffer);
             }
         }
         curBoardZ++;
     }
 
-    board->printBoard();
+    board->printBoard(curBoardZ);
 
     fclose(inputFile);
 #pragma endregion   

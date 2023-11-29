@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <cassert>
 
 #include "Position.h"
 #include "Helpers.h"
@@ -145,11 +146,13 @@ struct Board
         else if (raw[0] == 'D') return GET_BOARD_VALUE(raw[1] - '1', DOOR);
     }
 
-    void printBoard()
+    void printBoard(int maxHeight = -1)
     {
+        assert(maxHeight <= dim.z);
+
         NEW_PRINT_SECTION(BOARD INITIALIZATION)
         printf("\nGenerated board value: ");
-        for (int k = 0; k < dim.z; k++)
+        for (int k = 0; k < (maxHeight == -1 ? dim.z : maxHeight); k++)
         {
             printf("\nfloor %2d", k);
             for (int i = 0; i < dim.x; i++)

@@ -129,48 +129,48 @@ void search(const Board& board)
 }
 
 
-int main()
-{
-    shared_ptr<Board> board;
-
-#pragma region READ_BOARD
-    int nCols, nRows;
-    FILE* inputFile;
-
-    if (fopen_s(&inputFile, "../input/inp.txt", "r") != 0)
-    {
-        printf("file not found");
-        return -1;
-    }
-
-    wrap_fscanf_s(inputFile, "%d,", &nCols);
-    wrap_fscanf_s(inputFile, "%d", &nRows);
-
-    board = make_shared<Board>(nCols, nRows);
-
-    char buffer[50];
-    int curBoardZ = 0;
-    while (fscanf_s(inputFile, "\n[%[^]]]", buffer, sizeof(buffer)) != EOF)
-    {
-        printf("\n%s\n", buffer);
-        for (int i = 0; i < nRows; i++)
-        {
-            for (int j = 0; j < nCols; j++)
-            {
-                fscanf_s(inputFile, "%[, \n]", buffer, sizeof(buffer));
-                wrap_fscanf_s(inputFile, "%[^, \n]", buffer, sizeof(buffer));
-
-                board->setBoardData({ i, j, curBoardZ }, buffer);
-                printf("%s|", buffer);
-            }
-        }
-        curBoardZ++;
-    }
-
-    board->printBoard();
-
-    fclose(inputFile);
-#pragma endregion   
-
-    search(*board);
-}
+//int main()
+//{
+//    shared_ptr<Board> board;
+//
+//#pragma region READ_BOARD
+//    int nCols, nRows;
+//    FILE* inputFile;
+//
+//    if (fopen_s(&inputFile, "../input/inp.txt", "r") != 0)
+//    {
+//        printf("file not found");
+//        return -1;
+//    }
+//
+//    wrap_fscanf_s(inputFile, "%d,", &nCols);
+//    wrap_fscanf_s(inputFile, "%d", &nRows);
+//
+//    board = make_shared<Board>(nCols, nRows);
+//
+//    char buffer[50];
+//    int curBoardZ = 0;
+//    while (fscanf_s(inputFile, "\n[%[^]]]", buffer, sizeof(buffer)) != EOF)
+//    {
+//        printf("\n%s\n", buffer);
+//        for (int i = 0; i < nRows; i++)
+//        {
+//            for (int j = 0; j < nCols; j++)
+//            {
+//                fscanf_s(inputFile, "%[, \n]", buffer, sizeof(buffer));
+//                wrap_fscanf_s(inputFile, "%[^, \n]", buffer, sizeof(buffer));
+//
+//                board->setBoardData({ i, j, curBoardZ }, buffer);
+//                printf("%s|", buffer);
+//            }
+//        }
+//        curBoardZ++;
+//    }
+//
+//    board->printBoard();
+//
+//    fclose(inputFile);
+//#pragma endregion   
+//
+//    search(*board);
+//}

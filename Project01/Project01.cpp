@@ -51,7 +51,12 @@ bool search(const Board& board, vector<SearchState> &stateDataList, SearchState&
 
     initialState.cost = 0;
     initialState.stateIndex = 0;
-    initialState.desiredTargets.push_back(boardData.targetIndexList[0]);
+
+    for (int i = 0; i < MAX_AGENT_COUNT; i++)
+    {
+        if(boardData.targetIndexList[i] != -1)
+            initialState.desiredTargets[i].push_back(boardData.targetIndexList[i]);
+    }
 
     stateDataList.push_back(initialState);
     openedList.push({ 0, 0 });
@@ -70,11 +75,22 @@ bool search(const Board& board, vector<SearchState> &stateDataList, SearchState&
             closedList.insert(state);
         }
 
-        if (state.desiredTargets.size() == 0) //A1 arrived T1
+        bool allAgentsArrived = true;
+        for (int i = 0; i < MAX_AGENT_COUNT; i++)
+        {
+            if (state.desiredTargets[i].size() > 0)
+            {
+                allAgentsArrived = false;
+                break;
+            }
+        }
+
+        if (allAgentsArrived)
         {
             returnSearchState = state;
             return true;
         }
+
 #pragma endregion
 
         for (int iagent = 0; iagent < MAX_AGENT_COUNT; iagent++)
@@ -146,9 +162,9 @@ bool search(const Board& board, vector<SearchState> &stateDataList, SearchState&
                 if (isTileValid)
                 {
                     nextState.agentIndexes[iagent] = board.getIndex(nextAgentPosition); // update new state
-                    if (nextState.desiredTargets.size() > 0 && nextState.desiredTargets.back() == nextAgentIndex) //Arrive most recent desire target
+                    if (nextState.desiredTargets[iagent].size() > 0 && nextState.desiredTargets[iagent].back() == nextAgentIndex) //Arrive most recent desire target
                     {
-                        nextState.desiredTargets.pop_back();
+                        nextState.desiredTargets[iagent].pop_back();
                     }
                 }
                 else
@@ -158,9 +174,9 @@ bool search(const Board& board, vector<SearchState> &stateDataList, SearchState&
                         int requiredKey = GET_MASK_INDEX(tileValue);
                         int desireIndex = boardData.keyIndexList[requiredKey];
 
-                        if (COUNT(nextState.desiredTargets, desireIndex) == 0)
+                        if (COUNT(nextState.desiredTargets[iagent], desireIndex) == 0)
                         {
-                            nextState.desiredTargets.push_back(desireIndex);
+                            nextState.desiredTargets[iagent].push_back(desireIndex);
                         }
                     }
                 }

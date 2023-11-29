@@ -22,7 +22,7 @@ struct SearchState
     int stateIndex = -1;
     int parentStateIndex = -1;
 
-    std::vector<int> desiredTargets;
+    std::vector<int> desiredTargets[MAX_AGENT_COUNT];
 
     std::size_t operator()(const SearchState& searchState);
 };
@@ -38,7 +38,12 @@ namespace std
             size_t hashValue = 0;
             for (int e : searchState.agentIndexes) hash_combine(hashValue, e);
             for (int e : searchState.keyMasks) hash_combine(hashValue, e);
-            for (int e : searchState.desiredTargets) hash_combine(hashValue, e);
+
+            for (int i = 0; i < MAX_AGENT_COUNT; i++)
+            {
+                for (int e : searchState.desiredTargets[i]) hash_combine(hashValue, e);
+            }
+
             return hashValue;
         }
     };

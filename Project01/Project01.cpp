@@ -81,8 +81,15 @@ bool search(const Board& board, SearchResultData& resultData)
             closedList.insert(state);
         }
 
+
+        if (state.agents[0].desiredTargets.size() == 0)
+        {
+            resultData.finalState = state;
+            isPathFound = true;
+            break;
+        }
        
-        bool allAgentsArrived = true;
+        /*bool allAgentsArrived = true;
 
         for (int i = 0; i < MAX_AGENT_COUNT; i++)
         {
@@ -98,7 +105,7 @@ bool search(const Board& board, SearchResultData& resultData)
             resultData.finalState = state;
             isPathFound = true;
             break;
-        }
+        }*/
         
 
 #pragma endregion
@@ -221,7 +228,7 @@ bool search(const Board& board, SearchResultData& resultData)
             }
 
             auto priorityValue = 
-                PriorityValue{ (float)((nextState.time + MAX_AGENT_COUNT - 1) / MAX_AGENT_COUNT * MAX_AGENT_COUNT), 0 } + 
+                PriorityValue{ (float)((nextState.time + MAX_AGENT_COUNT - 1) / MAX_AGENT_COUNT), 0 } + 
                 nextState.getHeuristicValue(board);
 
             stateDataList.push_back(nextState);

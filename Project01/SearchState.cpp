@@ -19,7 +19,7 @@ PriorityValue SearchState::getHeuristicValue(const Board& board)
             expectedCost += p.distance(board.getPosition(e));
         }
 
-        if (i == 0) priorityValue.mainAgentHCost = expectedCost * MAX_AGENT_COUNT;
+        if (i == 0) priorityValue.mainAgentHCost = expectedCost;
         else
             priorityValue.subAgentHCost += expectedCost;
     }

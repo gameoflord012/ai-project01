@@ -18,7 +18,11 @@ struct AgentState
             keyMask == other.keyMask and
             targetCount == other.targetCount;
 
-        isEqual = desiredTargets.size() == other.desiredTargets.size();
+        if (desiredTargets.size() != other.desiredTargets.size())
+        {
+            return false;
+        }
+
         for (int i = 0; i < desiredTargets.size(); i++)
         {
             if (desiredTargets[i] != other.desiredTargets[i])

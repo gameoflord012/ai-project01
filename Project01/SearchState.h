@@ -3,6 +3,8 @@
 #include <functional>
 #include <vector>
 
+#include "Config.h"
+
 #include "Board.h"
 #include "Position.h"
 #include "PriorityValue.h"
@@ -12,7 +14,7 @@
 #define MAX_AGENT_COUNT 9
 #endif // !MAX_AGENT_COUNT
 
-#ifndef MAX_AGENT_COUNT
+#ifndef MAX_KEY_COUNT
 #define MAX_KEY_COUNT 9
 #endif // !MAX_AGENT_COUNT
 
@@ -41,7 +43,7 @@ struct SearchResultData
 
     int getPathCost()
     {
-        return finalState.time / MAX_AGENT_COUNT;
+        return (finalState.time + MAX_AGENT_COUNT - 1) / MAX_AGENT_COUNT;
     }
 
     int getSearchStateCount()

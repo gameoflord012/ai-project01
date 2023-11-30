@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClInclude Include="AgentState.h" />
     <ClInclude Include="Board.h" />
+    <ClInclude Include="Config.h" />
     <ClInclude Include="HashUtils.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="Position.h" />

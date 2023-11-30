@@ -11,8 +11,7 @@
 #include <algorithm>
 #include <chrono>
    
-#define MAX_BOARD_HEIGHT 10
-#define MAX_AGENT_COUNT 9
+#include "Config.h"
 
 #include "Position.h"
 #include "Board.h"
@@ -222,7 +221,7 @@ bool search(const Board& board, SearchResultData& resultData)
             }
 
             auto priorityValue = 
-                PriorityValue{ (float)(nextState.time + MAX_AGENT_COUNT - 1) / MAX_AGENT_COUNT, 0 } + 
+                PriorityValue{ (float)((nextState.time + MAX_AGENT_COUNT - 1) / MAX_AGENT_COUNT * MAX_AGENT_COUNT), 0 } + 
                 nextState.getHeuristicValue(board);
 
             stateDataList.push_back(nextState);

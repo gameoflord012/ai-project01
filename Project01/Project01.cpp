@@ -8,8 +8,10 @@
 #include <memory>
 #include <queue>
 #include <unordered_set>
-
-#define MAX_BOARD_HEIGHT 3
+#include <algorithm>
+#include <chrono>
+   
+#define MAX_BOARD_HEIGHT 10
 #define MAX_AGENT_COUNT 9
 
 #include "Position.h"
@@ -23,58 +25,45 @@ using MinHeap = std::priority_queue<T, std::vector<T>, std::greater<T>>;
 typedef pair<int, int> HeapType;
 typedef MinHeap<HeapType> SearchHeap;
 
-bool search(const Board& board, vector<SearchState> &stateDataList, SearchState& returnSearchState)
+bool search(const Board& board, SearchResultData& resultData)
 {
     NEW_PRINT_SECTION(SEARCHING)
 
-#pragma region READ_BOARD
-    printf("\nStart Searching ...");
-
-    int agentIndexList[MAX_AGENT_COUNT], targetIndexList[MAX_AGENT_COUNT];
-    fill(agentIndexList, agentIndexList + MAX_AGENT_COUNT, -1);
-    fill(targetIndexList, targetIndexList + MAX_AGENT_COUNT, -1);
-
-    for (int i = 0; i < board.gridData.size(); i++)
-    {
-        int value = board.gridData[i];
-        if ((value & 0xF) == AGENT)
-        {
-            int p = ROUND_INT(log2(value >> 4));
-            agentIndexList[p] = i;
-        }
-        else if ((value & 0xF) == TARGET)
-        {
-            int p = ROUND_INT(log2(value >> 4));
-            targetIndexList[p] = i;
-        }
-    }
-
-    printf("\n");
-    for (int e : agentIndexList) printf("%d ", e);
-    printf("\n");
-    for (int e : targetIndexList) printf("%d ", e);
-#pragma endregion
-    
 #pragma region DECLARE_VALUES
     SearchHeap openedList;
     unordered_set < SearchState, hash<SearchState> > closedList;
+    vector<SearchState>& stateDataList = resultData.stateData;
+    bool isPathFound = false;
+    auto start_timer = std::chrono::high_resolution_clock::now();
+
     stateDataList.clear();
 
     const int DIR_X[] = { 0, 0, 1, -1,  0, -1,  1, -1, 1 };
     const int DIR_Y[] = { 0, 1, 0,  0, -1,  1, -1, -1, 1 };
     const int DIR_SIZE = 5;
+
+    BoardData boardData = board.getBoardData();
+    boardData.printBoardData();
 #pragma endregion
 
 #pragma region INIT_OPENED_LIST
     SearchState initialState;
     for (int i = 0; i < MAX_AGENT_COUNT; i++)
     {
-        initialState.agentIndexes[i] = agentIndexList[i];
+        initialState.agentIndexes[i] = boardData.agentIndexList[i];
         initialState.keyMasks[i] = 0;
     }
 
     initialState.cost = 0;
     initialState.stateIndex = 0;
+
+    for (int i = 0; i < MAX_AGENT_COUNT; i++)
+    {
+        if (boardData.agentIndexList[i] != -1 && boardData.targetIndexList[i] != -1)
+        {
+            initialState.agentDesiredTargets[i].push_back(boardData.targetIndexList[i]);
+        }
+    }
 
     stateDataList.push_back(initialState);
     openedList.push({ 0, 0 });
@@ -93,17 +82,30 @@ bool search(const Board& board, vector<SearchState> &stateDataList, SearchState&
             closedList.insert(state);
         }
 
-        if (state.agentIndexes[0] == targetIndexList[0]) //A1 arrived T1
+        bool allAgentsArrived = true;
+        for (int i = 0; i < MAX_AGENT_COUNT; i++)
         {
-            returnSearchState = state;
-            return true;
+            if (state.agentDesiredTargets[i].size() > 0)
+            {
+                allAgentsArrived = false;
+                break;
+            }
         }
+
+        if (allAgentsArrived)
+        {
+            resultData.finalState = state;
+            isPathFound = true;
+            break;
+        }
+
 #pragma endregion
 
         for (int iagent = 0; iagent < MAX_AGENT_COUNT; iagent++)
         {
-            if (agentIndexList[iagent] == -1) continue;
+            if (boardData.agentIndexList[iagent] == -1) continue;
             if (state.agentIndexes[iagent] == -1) continue;
+            if (state.agentDesiredTargets[iagent].size() == 0) continue;
 
             Position agentPosition = board.getPosition(state.agentIndexes[iagent]);
 
@@ -120,10 +122,12 @@ bool search(const Board& board, vector<SearchState> &stateDataList, SearchState&
                     agentPosition.z
                 };
 
+                int nextAgentIndex = board.getIndex(nextAgentPosition);
+
 #pragma region CHECK_INVALID_NEXT_POSITION
                 if (board.getIndex(nextAgentPosition) == -1) continue;
 
-                if (board.isCell(nextAgentPosition, OBSTACLE))
+                if (board.isTile(nextAgentPosition, OBSTACLE))
                 {
                     continue;
                 }
@@ -132,52 +136,84 @@ bool search(const Board& board, vector<SearchState> &stateDataList, SearchState&
 #pragma region UPDATE_STAIR_POSITION
                 if (DIR_X[idir] == 0 and DIR_Y[idir] == 0)
                 {
-                    if (board.isCell(nextAgentPosition, STAIR_UP))
+                    if (board.isTile(nextAgentPosition, STAIR_UP))
                     {
                         nextAgentPosition.z += 1;
                     }
-                    else if (board.isCell(nextAgentPosition, STAIR_DOWN))
+                    else if (board.isTile(nextAgentPosition, STAIR_DOWN))
                     {
                         nextAgentPosition.z -= 1;
                     }
                 }
 
-                if (board.getIndex(nextAgentPosition) == -1) //out of board
+                if (nextAgentIndex == -1) //out of board
                 {
                     continue;
                 }
 #pragma endregion
 
 #pragma region UPDATE_KEY_MASK
-                if (board.isCell(nextAgentPosition, KEY))
+                if (board.isTile(nextAgentPosition, KEY))
                 {
                     nextState.keyMasks[iagent] |= GET_MASK(board.getBoardValue(nextAgentPosition));
                 }
 #pragma endregion
 
-                bool noObstacle = not board.isCell(nextAgentPosition, OBSTACLE);
-                bool noDoorOrHasKey =
-                    not board.isCell(nextAgentPosition, DOOR) or
-                    VALUE_CONTAIN_MASK(board.getBoardValue(nextAgentPosition), nextState.keyMasks[iagent]);
+                bool noObstacle = not board.isTile(nextAgentPosition, OBSTACLE);
+                int tileValue = board.getBoardValue(nextAgentPosition);
 
-                bool isTileValid = noObstacle and noDoorOrHasKey;
+                bool noDoorOrHasKey =
+                    not board.isTile(nextAgentPosition, DOOR) or
+                    VALUE_CONTAIN_MASK(tileValue, nextState.keyMasks[iagent]);
+
+                bool anotherAgentOccured = false;
+                for (int jagent = 0; jagent < MAX_AGENT_COUNT; jagent++)
+                {
+                    if (iagent != jagent && nextAgentIndex == state.agentIndexes[jagent])
+                    {
+                        anotherAgentOccured = true;
+                        break;
+                    }
+                }
+
+                bool isTileValid = noObstacle and noDoorOrHasKey and not anotherAgentOccured;
 
                 if (isTileValid)
                 {
                     nextState.agentIndexes[iagent] = board.getIndex(nextAgentPosition); // update new state
+                    if (nextState.agentDesiredTargets[iagent].size() > 0 && nextState.agentDesiredTargets[iagent].back() == nextAgentIndex) //Arrive most recent desire target
+                    {
+                        nextState.agentDesiredTargets[iagent].pop_back();
+                    }
                 }
                 else
                 {
-                    continue;
+                    if (board.isTile(nextAgentPosition, DOOR) and not noDoorOrHasKey) //Step on door tile but have to key for the door
+                    {
+                        int requiredKey = GET_MASK_INDEX(tileValue);
+                        int keyIndex = boardData.keyIndexList[requiredKey];
+
+                        if (COUNT(nextState.agentDesiredTargets[iagent], nextAgentIndex) == 0)
+                        {
+                            nextState.agentDesiredTargets[iagent].push_back(nextAgentIndex);
+                        }
+
+                        if (COUNT(nextState.agentDesiredTargets[iagent], keyIndex) == 0)
+                        {
+                            nextState.agentDesiredTargets[iagent].push_back(keyIndex);
+                        }
+                    }
                 }
 
                 stateDataList.push_back(nextState);
-                openedList.push({ nextState.cost, stateDataList.size() - 1 });
+                openedList.push({ nextState.cost + nextState.getHeuristicValue(board), stateDataList.size() - 1 });
             }
         }
     }
 
-    return false;
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_timer);
+    resultData.timeElapsedInMiniSeconds = duration.count();
+    return isPathFound;
 }
 
 void printPathTrace(const Board& board, const vector<SearchState>& stateData, const SearchState& traceState)
@@ -185,8 +221,12 @@ void printPathTrace(const Board& board, const vector<SearchState>& stateData, co
     if (traceState.parentStateIndex != -1) 
         printPathTrace(board, stateData, stateData[traceState.parentStateIndex]);
 
-    Position p = board.getPosition(traceState.agentIndexes[0]);
-    printf("\nFloor %2d, ROW = %3d, COL = %3d", p.z, p.x, p.y);
+    
+    for (int i = 0; i < MAX_AGENT_COUNT; i++) if(traceState.agentIndexes[i] != -1)
+    {
+        Position p = board.getPosition(traceState.agentIndexes[i]);
+        printf("\n[A%1d] Floor %2d, ROW = %3d, COL = %3d", i, p.z, p.x, p.y);
+    }
 }
 
 int main()
@@ -203,10 +243,10 @@ int main()
         return -1;
     }
 
-    wrap_fscanf_s(inputFile, "%d,", &nCols);
-    wrap_fscanf_s(inputFile, "%d", &nRows);
+    wrap_fscanf_s(inputFile, "%d,", &nRows);
+    wrap_fscanf_s(inputFile, "%d", &nCols);
 
-    board = make_shared<Board>(nCols, nRows);
+    board = make_shared<Board>(nRows, nCols);
 
     char buffer[50];
     int curBoardZ = 0;
@@ -216,38 +256,38 @@ int main()
 
     while (fscanf_s(inputFile, "\n[%[^]]]", buffer, sizeof(buffer)) != EOF)
     {
-        printf("\n%s\n", buffer);
+        printf("\n%s", buffer);
         for (int i = 0; i < nRows; i++)
         {
+            printf("\n");
             for (int j = 0; j < nCols; j++)
             {
                 fscanf_s(inputFile, "%[, \n]", buffer, sizeof(buffer));
                 wrap_fscanf_s(inputFile, "%[^, \n]", buffer, sizeof(buffer));
 
                 board->setBoardData({ i, j, curBoardZ }, buffer);
-                printf("%s|", buffer);
+                printf("%2s|", buffer);
             }
         }
         curBoardZ++;
     }
 
-    board->printBoard();
+    board->printBoard(curBoardZ);
 
     fclose(inputFile);
 #pragma endregion   
 
-    vector<SearchState> searchDataList;
-    SearchState searchResult;
+    SearchResultData resultData;
 
-    bool isSearchSuccess = search(*board, searchDataList, searchResult);
+    bool isSearchSuccess = search(*board, resultData);
 
     NEW_PRINT_SECTION(RESULT)
     if (isSearchSuccess)
     {
-        printf("\ncost of search: %d", searchResult.cost);
-
         printf("\npath go:");
-        printPathTrace(*board, searchDataList, searchResult);
+        printPathTrace(*board, resultData.stateData, resultData.finalState);
+
+        resultData.printResult();
     }
     else
     {

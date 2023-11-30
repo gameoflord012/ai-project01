@@ -1,4 +1,6 @@
 #pragma once
+#include <cmath>
+
 #include "HashUtils.h"
 
 struct Position
@@ -13,6 +15,14 @@ struct Position
         size_t hashResult = 0;
 
         return hashResult;
+    }
+
+    float distance(const Position& p) const 
+    {
+        return std::sqrt(
+            std::pow(p.x - x, 2) +
+            std::pow(p.y - y, 2) +
+            std::pow(p.z - z, 2));
     }
 };
 

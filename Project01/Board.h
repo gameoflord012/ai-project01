@@ -154,7 +154,7 @@ struct Board
         printf("\nGenerated board value: ");
         for (int k = 0; k < (maxHeight == -1 ? dim.z : maxHeight); k++)
         {
-            printf("\nfloor %2d", k);
+            printf("\nfloor %2d", k+1);
             for (int i = 0; i < dim.x; i++)
             {
                 printf("\n");

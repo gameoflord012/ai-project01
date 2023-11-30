@@ -51,7 +51,7 @@ bool search(const Board& board, SearchResultData& resultData)
     for (int i = 0; i < MAX_AGENT_COUNT; i++)
     {
         initialState.agents[i].index = boardData.agentIndexList[i];
-        initialState.agents->keyMask = 0;
+        initialState.agents[i].keyMask = 0;
     }
 
     initialState.time = 0;
@@ -71,7 +71,7 @@ bool search(const Board& board, SearchResultData& resultData)
 
     while (openedList.size() > 0)
     {
-        const auto& top = openedList.top();
+        PriorityValue top = openedList.top();
         openedList.pop();
 
 #pragma region CHECK_STATE_CLOSED_OR_GOAL_STATE

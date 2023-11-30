@@ -37,5 +37,10 @@ bool operator==(const SearchState& left, const SearchState& right)
         }
     }
 
+    if (left.time % MAX_AGENT_COUNT != right.time % MAX_AGENT_COUNT)
+    {
+        return false;
+    }
+
     return true;
 }

@@ -143,10 +143,12 @@
     <ClCompile Include="SearchState.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AgentState.h" />
     <ClInclude Include="Board.h" />
     <ClInclude Include="HashUtils.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="Position.h" />
+    <ClInclude Include="PriorityValue.h" />
     <ClInclude Include="SearchState.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

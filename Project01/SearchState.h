@@ -5,6 +5,8 @@
 
 #include "Board.h"
 #include "Position.h"
+#include "PriorityValue.h"
+#include "AgentState.h"
 
 #ifndef MAX_AGENT_COUNT
 #define MAX_AGENT_COUNT 9
@@ -16,18 +18,16 @@
 
 struct SearchState
 {
-    int agentIndexes[MAX_AGENT_COUNT];
-    int keyMasks[MAX_AGENT_COUNT];
-    int cost = 0;
+    AgentState agents[MAX_AGENT_COUNT];
+
+    int time = 0;
 
     int stateIndex = -1;
     int parentStateIndex = -1;
 
-    std::vector<int> agentDesiredTargets[MAX_AGENT_COUNT];
-
     std::size_t operator()(const SearchState& searchState);
 
-    int getHeuristicValue(const Board& board);
+    PriorityValue getHeuristicValue(const Board& board);
 };
 
 bool operator==(const SearchState& left, const SearchState& right);
@@ -41,7 +41,7 @@ struct SearchResultData
 
     int getPathCost()
     {
-        return finalState.cost;
+        return finalState.time / MAX_AGENT_COUNT;
     }
 
     int getSearchStateCount()
@@ -64,12 +64,10 @@ namespace std
     {
         std::size_t operator()(const SearchState& searchState) const {
             size_t hashValue = 0;
-            for (int e : searchState.agentIndexes) hash_combine(hashValue, e);
-            for (int e : searchState.keyMasks) hash_combine(hashValue, e);
-
+            
             for (int i = 0; i < MAX_AGENT_COUNT; i++)
             {
-                for (int e : searchState.agentDesiredTargets[i]) hash_combine(hashValue, e);
+                hash_combine(hashValue, searchState.agents[i]);
             }
 
             return hashValue;

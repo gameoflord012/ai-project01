@@ -39,7 +39,7 @@ bool operator==(const SearchState& left, const SearchState& right);
 
 struct SearchResultData
 {
-    std::vector<SearchState> stateData;
+    std::vector<SearchStatePtr> stateData;
     SearchState finalState;
     
     size_t timeElapsedInMiniSeconds = 0;

@@ -16,14 +16,15 @@
 #include "Position.h"
 #include "Board.h"
 #include "SearchState.h"
+#include "SearchStatePtr.h"
 #include "PriorityValue.h"
 
 using namespace std;
 
 template <typename T>
 using MinHeap = std::priority_queue < T, std::vector<T>, T > ;
-typedef MinHeap<PriorityValue> SearchHeap;
-typedef unordered_set < SearchState, hash<SearchState> > UniqueSet;
+typedef MinHeap<SearchStatePtr> SearchHeap;
+typedef unordered_set < SearchStatePtr, hash<SearchStatePtr> > UniqueSet;
 
 bool search(const Board& board, SearchResultData& resultData)
 {
@@ -48,7 +49,8 @@ bool search(const Board& board, SearchResultData& resultData)
 #pragma endregion
 
 #pragma region INIT_OPENED_LIST
-    SearchState initialState;
+    SearchStatePtr initialStatePtr = SearchStatePtr(new SearchState());
+    SearchState& initialState = initialStatePtr.value();
     for (int i = 0; i < MAX_AGENT_COUNT; i++)
     {
         initialState.agents[i].index = boardData.agentIndexList[i];
@@ -67,7 +69,7 @@ bool search(const Board& board, SearchResultData& resultData)
     }
 
     stateDataList.push_back(initialState);
-    openedList.push({ 0, 0, 0 });
+    openedList.push(initialStatePtr);
 #pragma endregion
 
     while (openedList.size() > 0)

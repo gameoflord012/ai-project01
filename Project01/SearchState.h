@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <vector>
+#include <memory>
 
 #include "Config.h"
 
@@ -26,6 +27,8 @@ struct SearchState
 
     int stateIndex = -1;
     int parentStateIndex = -1;
+
+    weak_ptr<SearchState> parent;
 
     std::size_t operator()(const SearchState& searchState);
 

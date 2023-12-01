@@ -23,6 +23,7 @@ using namespace std;
 template <typename T>
 using MinHeap = std::priority_queue < T, std::vector<T>, T > ;
 typedef MinHeap<PriorityValue> SearchHeap;
+typedef unordered_set < SearchState, hash<SearchState> > UniqueSet;
 
 bool search(const Board& board, SearchResultData& resultData)
 {
@@ -30,7 +31,8 @@ bool search(const Board& board, SearchResultData& resultData)
 
 #pragma region DECLARE_VALUES
     SearchHeap openedList;
-    unordered_set < SearchState, hash<SearchState> > closedList;
+    UniqueSet closedList;
+
     vector<SearchState>& stateDataList = resultData.stateData;
     bool isPathFound = false;
     auto start_timer = std::chrono::high_resolution_clock::now();

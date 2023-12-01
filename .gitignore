@@ -396,3 +396,15 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# SFML
+*/sfml
+
+# GLUT
+*/glut
+
+# IMGUI
+*/imgui
+
+# GLFW
+*/glfw

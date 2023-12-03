@@ -34,11 +34,11 @@ bool search(const Board& board, SearchResultData& resultData)
     SearchHeap openedList;
     UniqueSet closedList;
 
-    vector<SearchState>& stateDataList = resultData.stateData;
+    vector<SearchStatePtr>& statePtrList = resultData.statePtrList;
+    statePtrList.clear();
+
     bool isPathFound = false;
     auto start_timer = std::chrono::high_resolution_clock::now();
-
-    stateDataList.clear();
 
     const int DIR_X[] = { 0, 0, 1, -1,  0, -1,  1, -1, 1 };
     const int DIR_Y[] = { 0, 1, 0,  0, -1,  1, -1, -1, 1 };
@@ -49,8 +49,9 @@ bool search(const Board& board, SearchResultData& resultData)
 #pragma endregion
 
 #pragma region INIT_OPENED_LIST
-    SearchStatePtr initialStatePtr = SearchStatePtr(new SearchState());
-    SearchState& initialState = initialStatePtr.value();
+    statePtrList.push_back(new SearchState());
+
+    SearchState& initialState = statePtrList.back().value();
     for (int i = 0; i < MAX_AGENT_COUNT; i++)
     {
         initialState.agents[i].index = boardData.agentIndexList[i];
@@ -68,8 +69,7 @@ bool search(const Board& board, SearchResultData& resultData)
         }
     }
 
-    stateDataList.push_back(initialState);
-    openedList.push(initialStatePtr);
+    openedList.push(&initialState);
 #pragma endregion
 
     while (openedList.size() > 0)

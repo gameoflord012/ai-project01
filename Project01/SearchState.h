@@ -10,6 +10,7 @@
 #include "Position.h"
 #include "PriorityValue.h"
 #include "AgentState.h"
+#include "SearchStatePtr.h"
 
 #ifndef MAX_AGENT_COUNT
 #define MAX_AGENT_COUNT 9
@@ -18,6 +19,8 @@
 #ifndef MAX_KEY_COUNT
 #define MAX_KEY_COUNT 9
 #endif // !MAX_AGENT_COUNT
+
+
 
 struct SearchState
 {
@@ -39,7 +42,7 @@ bool operator==(const SearchState& left, const SearchState& right);
 
 struct SearchResultData
 {
-    std::vector<SearchStatePtr> stateData;
+    std::vector<SearchStatePtr> statePtrList;
     SearchState finalState;
     
     size_t timeElapsedInMiniSeconds = 0;

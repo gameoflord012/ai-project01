@@ -3,44 +3,96 @@
 
 std::size_t SearchState::operator()(const SearchState& searchState)
 {
-    return std::hash<SearchState>{}(searchState);
-}
+    size_t hashValue = 0;
 
-PriorityValue SearchState::getHeuristicValue(const Board& board)
-{
-    PriorityValue priorityValue;
     for (int i = 0; i < MAX_AGENT_COUNT; i++)
     {
-        Position p = board.getPosition(agents[i].index);
-        float expectedCost = 0;
-
-        for (int e : agents[i].desiredTargets)
-        {
-            expectedCost += p.distance(board.getPosition(e));
-        }
-
-        if (i == 0) priorityValue.mainAgentHCost = expectedCost;
-        else
-            priorityValue.subAgentHCost += expectedCost;
+        hash_combine(hashValue, searchState.agents[i]);
     }
 
-    return priorityValue;
+    return hashValue;
 }
 
-bool operator==(const SearchState& left, const SearchState& right)
+bool SearchState::operator()(const SearchState& a, const SearchState& b)
+{
+    return true;
+}
+
+bool SearchState::operator==(const SearchState& other) const
 {
     for (int i = 0; i < MAX_AGENT_COUNT; i++)
     {
-        if (not(left.agents[i] == right.agents[i]))
+        if (not(agents[i] == other.agents[i]))
         {
             return false;
         }
     }
 
-    if (left.time % MAX_AGENT_COUNT != right.time % MAX_AGENT_COUNT)
+    if (time % MAX_AGENT_COUNT != other.time % MAX_AGENT_COUNT)
     {
         return false;
     }
 
     return true;
+}
+
+//PriorityValue SearchState::getHeuristicValue(const Board& board)
+//{
+//    PriorityValue priorityValue;
+//    for (int i = 0; i < MAX_AGENT_COUNT; i++)
+//    {
+//        Position p = board.getPosition(agents[i].index);
+//        float expectedCost = 0;
+//
+//        for (int e : agents[i].desiredTargets)
+//        {
+//            expectedCost += p.distance(board.getPosition(e));
+//        }
+//
+//        if (i == 0) priorityValue.mainAgentHCost = expectedCost;
+//        else
+//            priorityValue.subAgentHCost += expectedCost;
+//    }
+//
+//    return priorityValue;
+//}
+
+//bool operator==(const SearchState& left, const SearchState& right)
+//{
+//    for (int i = 0; i < MAX_AGENT_COUNT; i++)
+//    {
+//        if (not(left.agents[i] == right.agents[i]))
+//        {
+//            return false;
+//        }
+//    }
+//
+//    if (left.time % MAX_AGENT_COUNT != right.time % MAX_AGENT_COUNT)
+//    {
+//        return false;
+//    }
+//
+//    return true;
+//}
+
+int SearchResultData::getPathCost()
+{
+    return (finalState.value().time + MAX_AGENT_COUNT - 1) / MAX_AGENT_COUNT;
+}
+
+int SearchResultData::getSearchStateCount()
+{
+    return statePtrList.size();
+}
+
+void SearchResultData::printResult()
+{
+    printf("\nSearch State Count: %d", getSearchStateCount());
+    printf("\nPath cost: %d", getPathCost());
+    printf("\nTime elapsed: %f miliseconds", timeElapsedInMiniSeconds);
+}
+
+bool operator==(const SearchState& left, const SearchState& right)
+{
+    return left.operator==(right);
 }

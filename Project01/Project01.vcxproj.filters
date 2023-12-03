@@ -19,7 +19,13 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SearchState.cpp">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgentState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SmartPtr.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -47,7 +53,7 @@
     <ClInclude Include="Config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SearchStatePtr.h">
+    <ClInclude Include="SmartPtr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

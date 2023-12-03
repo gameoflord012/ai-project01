@@ -139,8 +139,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AgentState.cpp" />
     <ClCompile Include="Project01.cpp" />
     <ClCompile Include="SearchState.cpp" />
+    <ClCompile Include="SmartPtr.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AgentState.h" />
@@ -151,7 +153,7 @@
     <ClInclude Include="Position.h" />
     <ClInclude Include="PriorityValue.h" />
     <ClInclude Include="SearchState.h" />
-    <ClInclude Include="SearchStatePtr.h" />
+    <ClInclude Include="SmartPtr.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

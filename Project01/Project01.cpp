@@ -16,15 +16,14 @@
 #include "Position.h"
 #include "Board.h"
 #include "SearchState.h"
-#include "SearchStatePtr.h"
-#include "PriorityValue.h"
+#include "SmartPtr.h"
 
 using namespace std;
 
 template <typename T>
 using MinHeap = std::priority_queue < T, std::vector<T>, T > ;
-typedef MinHeap<SearchStatePtr> SearchHeap;
-typedef unordered_set < SearchStatePtr, hash<SearchStatePtr> > UniqueSet;
+typedef MinHeap<StatePtr> SearchHeap;
+typedef unordered_set < StatePtr, StatePtr > UniqueSet;
 
 bool search(const Board& board, SearchResultData& resultData)
 {
@@ -34,7 +33,7 @@ bool search(const Board& board, SearchResultData& resultData)
     SearchHeap openedList;
     UniqueSet closedList;
 
-    vector<SearchStatePtr>& statePtrList = resultData.statePtrList;
+    vector<StatePtr>& statePtrList = resultData.statePtrList;
     statePtrList.clear();
 
     bool isPathFound = false;
@@ -48,47 +47,46 @@ bool search(const Board& board, SearchResultData& resultData)
     boardData.printBoardData();
 #pragma endregion
 
-#pragma region INIT_OPENED_LIST
-    statePtrList.push_back(new SearchState());
-
-    SearchState& initialState = statePtrList.back().value();
+#pragma region INIT_INITIAL_STATE_AND_OPENED_LIST
+    StatePtr initialStatePtr = new SearchState();
+    statePtrList.push_back(initialStatePtr);
+    
     for (int i = 0; i < MAX_AGENT_COUNT; i++)
     {
-        initialState.agents[i].index = boardData.agentIndexList[i];
-        initialState.agents[i].keyMask = 0;
+        initialStatePtr.value().agents[i].index = boardData.agentIndexList[i];
+        initialStatePtr.value().agents[i].keyMask = 0;
     }
 
-    initialState.time = 0;
-    initialState.stateIndex = 0;
+    initialStatePtr.value().time = 0;
 
-    for (int i = 0; i < MAX_AGENT_COUNT; i++)
+    for (int i = 0; i < MAX_AGENT_COUNT; i++) // add initial targets to desire target list
     {
         if (boardData.agentIndexList[i] != -1 && boardData.targetIndexList[i] != -1)
         {
-            initialState.agents[i].desiredTargets.push_back(boardData.targetIndexList[i]);
+            initialStatePtr.value().agents[i].desiredTargets.push_back(boardData.targetIndexList[i]);
         }
     }
 
-    openedList.push(&initialState);
+    openedList.push(initialStatePtr);
 #pragma endregion
 
     while (openedList.size() > 0)
     {
-        PriorityValue top = openedList.top();
+        StatePtr statePtr = openedList.top();
+        const SearchState& state = statePtr.value();
+
         openedList.pop();
 
 #pragma region CHECK_STATE_CLOSED_OR_GOAL_STATE
-        SearchState state = stateDataList[top.index];
-        if (closedList.count(state) > 0) continue;
+        if (closedList.count(statePtr) > 0) continue;
         else
         {
-            closedList.insert(state);
+            closedList.insert(statePtr);
         }
-
 
         if (state.agents[0].desiredTargets.size() == 0)
         {
-            resultData.finalState = state;
+            resultData.finalState = &state;
             isPathFound = true;
             break;
         }
@@ -119,14 +117,12 @@ bool search(const Board& board, SearchResultData& resultData)
 
         if (boardData.agentIndexList[iagent] == -1) // agent don't exist
         {
-            state.time += 1;
-            stateDataList.push_back(state);
+            StatePtr nextStatePtr = new SearchState(state);
 
-            auto priorityValue = top;
-            priorityValue.index = stateDataList.size() - 1;
+            nextStatePtr.value().time += 1;
+            statePtrList.push_back(nextStatePtr);
 
-            openedList.push(priorityValue);
-
+            openedList.push(nextStatePtr);
             continue;
         }
 
@@ -139,10 +135,11 @@ bool search(const Board& board, SearchResultData& resultData)
 
         for (int idir = 0; idir < DIR_SIZE; idir++)
         {
-            SearchState nextState = state;
+            StatePtr nextStatePtr = new SearchState(state);
+            SearchState& nextState = nextStatePtr.value();
+
             nextState.time += 1;
-            nextState.stateIndex = stateDataList.size();
-            nextState.parentStateIndex = state.stateIndex;
+            nextState.parent = &state;
 
             AgentState& nextAgentState = nextState.agents[iagent];
 
@@ -153,11 +150,6 @@ bool search(const Board& board, SearchResultData& resultData)
             };
 
             int nextAgentIndex = board.getIndex(nextAgentPosition);
-
-#pragma region CHECK_INVALID_NEXT_POSITION
-            if (board.getIndex(nextAgentPosition) == -1) continue;
-            if (board.isTile(nextAgentPosition, OBSTACLE)) continue;
-#pragma endregion
 
 #pragma region UPDATE_STAIR_POSITION
             if (DIR_X[idir] == 0 and DIR_Y[idir] == 0)
@@ -171,11 +163,6 @@ bool search(const Board& board, SearchResultData& resultData)
                     nextAgentPosition.z -= 1;
                 }
             }
-
-            if (nextAgentIndex == -1) //out of board
-            {
-                continue;
-            }
 #pragma endregion
 
 #pragma region UPDATE_KEY_MASK
@@ -185,7 +172,11 @@ bool search(const Board& board, SearchResultData& resultData)
             }
 #pragma endregion
 
-            bool noObstacle = not board.isTile(nextAgentPosition, OBSTACLE);
+            
+#pragma region CHECK_TILE_VALID_AND_UPD_BOOLEAN
+            if (board.getIndex(nextAgentPosition) == -1) continue;
+            if (board.isTile(nextAgentPosition, OBSTACLE)) continue;
+
             int tileValue = board.getBoardValue(nextAgentPosition);
 
             bool noDoorOrHasKey =
@@ -202,45 +193,40 @@ bool search(const Board& board, SearchResultData& resultData)
                 }
             }
 
-            bool isTileValid = noObstacle and noDoorOrHasKey and not anotherAgentOccured;
+            bool isTileValid = noDoorOrHasKey and not anotherAgentOccured;
+#pragma endregion
 
             if (isTileValid)
             {
                 nextAgentState.index = board.getIndex(nextAgentPosition); // update new state
-                if (nextAgentState.desiredTargets.size() > 0 && nextAgentState.desiredTargets.back() == nextAgentIndex) //Arrive most recent desire target
+                if (nextAgentState.desiredTargets.size() > 0 && 
+                    nextAgentState.desiredTargets.back() == nextAgentIndex) //arrive at most recent desire target
                 {
                     nextAgentState.desiredTargets.pop_back();
                 }
             }
             else
             {
-                if (board.isTile(nextAgentPosition, DOOR) and not noDoorOrHasKey) //Step on door tile but have to key for the door
+                if (board.isTile(nextAgentPosition, DOOR) and not noDoorOrHasKey) //Step on door tile but have no key for the door
                 {
                     int requiredKey = GET_MASK_INDEX(tileValue);
                     int keyIndex = boardData.keyIndexList[requiredKey];
 
-                    if (COUNT(nextAgentState.desiredTargets, nextAgentIndex) == 0)
+                    if (COUNT(nextAgentState.desiredTargets, nextAgentIndex) == 0) //Add door to desire target
                     {
                         nextAgentState.desiredTargets.push_back(nextAgentIndex);
                     }
 
                     if (COUNT(nextAgentState.desiredTargets, keyIndex) == 0)
                     {
-                        nextAgentState.desiredTargets.push_back(keyIndex);
+                        nextAgentState.desiredTargets.push_back(keyIndex); // Add key to desire target
                     }
                 }
             }
 
-            auto priorityValue = 
-                PriorityValue{ (float)((nextState.time + MAX_AGENT_COUNT - 1) / MAX_AGENT_COUNT), 0 } + 
-                nextState.getHeuristicValue(board);
-
-            stateDataList.push_back(nextState);
-            priorityValue.index = stateDataList.size() - 1;
-
-            openedList.push(priorityValue);
+            statePtrList.push_back(&nextState);
+            openedList.push(&nextState);
         }
-#pragma endregion
     }
 
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_timer);
@@ -248,10 +234,10 @@ bool search(const Board& board, SearchResultData& resultData)
     return isPathFound;
 }
 
-void printPathTrace(const Board& board, const vector<SearchState>& stateData, const SearchState& traceState)
+void printPathTrace(const Board& board, const SearchState& traceState)
 {
-    if (traceState.parentStateIndex != -1) 
-        printPathTrace(board, stateData, stateData[traceState.parentStateIndex]);
+    if (traceState.parent.is_null()) 
+        printPathTrace(board, traceState.parent.value());
 
     
     for (int i = 0; i < MAX_AGENT_COUNT; i++) if(traceState.agents[i].index != -1)
@@ -317,7 +303,8 @@ int main()
     if (isSearchSuccess)
     {
         printf("\npath go:");
-        printPathTrace(*board, resultData.stateData, resultData.finalState);
+        printPathTrace(*board, resultData.finalState.value());
+        //printPathTrace(*board, resultData.stateData, resultData.finalState);
 
         resultData.printResult();
     }

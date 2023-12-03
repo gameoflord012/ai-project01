@@ -7,10 +7,8 @@
 #include "Config.h"
 
 #include "Board.h"
-#include "Position.h"
-#include "PriorityValue.h"
 #include "AgentState.h"
-#include "SearchStatePtr.h"
+#include "SmartPtr.h"
 
 #ifndef MAX_AGENT_COUNT
 #define MAX_AGENT_COUNT 9
@@ -20,65 +18,44 @@
 #define MAX_KEY_COUNT 9
 #endif // !MAX_AGENT_COUNT
 
-
-
 struct SearchState
 {
     AgentState agents[MAX_AGENT_COUNT];
 
     int time = 0;
 
-    int stateIndex = -1;
-    int parentStateIndex = -1;
+    /*int stateIndex = -1;
+    int parentStateIndex = -1;*/
 
-    weak_ptr<SearchState> parent;
+    SmartPtr<SearchState> parent;
 
     std::size_t operator()(const SearchState& searchState);
+    bool operator()(const SearchState& a, const SearchState& b);
 
-    PriorityValue getHeuristicValue(const Board& board);
+
+    bool operator==(const SearchState& other) const;
+    
+    /*PriorityValue getHeuristicValue(const Board& board);*/
 };
 
-bool operator==(const SearchState& left, const SearchState& right);
+typedef SmartPtr<SearchState> StatePtr;
+//template class SmartPtr<SearchState>;
+//		if (a.mainAgentHCost != b.mainAgentHCost) return a.mainAgentHCost > b.mainAgentHCost;
+//		return a.subAgentHCost > b.subAgentHCost;
+//	}
+//
+//bool operator==(const StatePtr& left, const StatePtr& right)
+//{
+//    return left.operator==(right);
+//}
 
 struct SearchResultData
 {
-    std::vector<SearchStatePtr> statePtrList;
-    SearchState finalState;
-    
+    std::vector<StatePtr> statePtrList;
+    StatePtr finalState;
     size_t timeElapsedInMiniSeconds = 0;
 
-    int getPathCost()
-    {
-        return (finalState.time + MAX_AGENT_COUNT - 1) / MAX_AGENT_COUNT;
-    }
-
-    int getSearchStateCount()
-    {
-        return stateData.size();
-    }
-
-    void printResult()
-    {
-        printf("\nSearch State Count: %d", getSearchStateCount());
-        printf("\nPath cost: %d", getPathCost());
-        printf("\nTime elapsed: %f miliseconds", timeElapsedInMiniSeconds);
-    }
+    int getPathCost();
+    int getSearchStateCount();
+    void printResult();
 };
-
-namespace std
-{
-    template<>
-    struct hash<SearchState>
-    {
-        std::size_t operator()(const SearchState& searchState) const {
-            size_t hashValue = 0;
-            
-            for (int i = 0; i < MAX_AGENT_COUNT; i++)
-            {
-                hash_combine(hashValue, searchState.agents[i]);
-            }
-
-            return hashValue;
-        }
-    };
-}

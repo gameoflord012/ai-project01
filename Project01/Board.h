@@ -172,10 +172,16 @@ struct Board
         return (gridData[getIndex(p)] & 0xF) == c;
     }
 
-    float estimate_distance(int ia, int ib) const
+    enum { };
+
+    float estimate_distance(int ia, int ib, bool is_euclidean = false) const
     {
         assert(ia != -1 && ib != -1);
-        return getPosition(ia).distance(getPosition(ib));
+        
+        if(is_euclidean)
+            return getPosition(ia).distance(getPosition(ib));
+        else
+            return getPosition(ia).mahattan_distance(getPosition(ib));
     }
 
     std::vector<int> gridData;

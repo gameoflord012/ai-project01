@@ -24,6 +24,14 @@ struct Position
             std::pow(p.y - y, 2) +
             std::pow(p.z - z, 2));
     }
+
+    int mahattan_distance(const Position& p)
+    {
+        return
+            std::abs(p.x - x) +
+            std::abs(p.y - y) +
+            std::abs(p.z - z);
+    }
 };
 
 namespace std

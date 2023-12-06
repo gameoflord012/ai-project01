@@ -10,7 +10,8 @@
 #include <unordered_set>
 #include <algorithm>
 #include <chrono>
-   
+#include <functional>   
+
 #include "Config.h"
 
 #include "Position.h"
@@ -29,6 +30,9 @@ bool search(const shared_ptr<Board> board, SearchResultData& resultData)
 {
     NEW_PRINT_SECTION(SEARCHING)
 
+    auto start_timer = std::chrono::high_resolution_clock::now();
+    size_t search_seed = static_cast<size_t>(start_timer.time_since_epoch().count());
+
 #pragma region DECLARE_VALUES
     SearchHeap openedList;
     UniqueSet closedList;
@@ -37,7 +41,6 @@ bool search(const shared_ptr<Board> board, SearchResultData& resultData)
     statePtrList.clear();
 
     bool isPathFound = false;
-    auto start_timer = std::chrono::high_resolution_clock::now();
 
     const int DIR_X[] = { 0, 0, 1, -1,  0, -1,  1, -1, 1 };
     const int DIR_Y[] = { 0, 1, 0,  0, -1,  1, -1, -1, 1 };
@@ -202,8 +205,15 @@ bool search(const shared_ptr<Board> board, SearchResultData& resultData)
                 {
                     nextAgentState.desiredTargets.pop_back();
                     if (nextAgentState.desiredTargets.size() == 0) // desire target is a target
-                    { // gain point
-                        nextAgentState.point += 1;
+                    { 
+                        nextAgentState.point += 1;// gain point
+
+                        if (iagent != 0)
+                        {
+                            size_t seed = search_seed;
+                            hash_combine(seed, nextStatePtr);
+                            nextAgentState.desiredTargets.push_back(boardData.generate_random_target_index(seed));
+                        }
                     }
                 }
             }

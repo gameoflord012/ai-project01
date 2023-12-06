@@ -16,17 +16,14 @@ struct AgentState
 
     bool operator==(const AgentState& other) const;
     float get_heuristic_value(const Board& board);
-};
 
-template<>
-struct std::hash<AgentState>
-{
     std::size_t operator()(const AgentState& agents) const {
         size_t hashValue = 0;
 
         hash_combine(hashValue, agents.index);
         hash_combine(hashValue, agents.keyMask);
         hash_combine(hashValue, agents.point);
+
         for (int e : agents.desiredTargets) hash_combine(hashValue, e);
 
         return hashValue;

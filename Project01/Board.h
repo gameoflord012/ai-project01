@@ -41,8 +41,15 @@ struct BoardData
     int agentIndexList[MAX_AGENT_COUNT];
     int targetIndexList[MAX_AGENT_COUNT];
 
+    vector<int> floor_index_list;
+
     int keyIndexList[MAX_KEY_COUNT];
     int doorIndexList[MAX_KEY_COUNT];
+
+    int generate_random_target_index(int seed)
+    {
+        return floor_index_list[seed % floor_index_list.size()];
+    }
 
     void printBoardData()
     {
@@ -99,6 +106,10 @@ struct Board
             {
                 int p = ROUND_INT(log2(value >> 4));
                 data.doorIndexList[p] = i;
+            }
+            else if ((value & 0xF) == FLOOR)
+            {
+                data.floor_index_list.push_back(i);
             }
         }
 

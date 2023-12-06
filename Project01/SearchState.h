@@ -32,6 +32,8 @@ struct SearchState
     std::size_t operator()(const SearchState& searchState);
     bool operator==(const SearchState& other) const;
     bool operator()(const SearchState& a, const SearchState& b); // State Comparator
+
+    void print_state(const Board& board);
 };
 
 typedef SmartPtr<SearchState> StatePtr;

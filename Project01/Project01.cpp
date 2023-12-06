@@ -48,7 +48,7 @@ bool search(const Board& board, SearchResultData& resultData)
 #pragma endregion
 
 #pragma region INIT_INITIAL_STATE_AND_OPENED_LIST
-    StatePtr initialStatePtr(new SearchState);
+    StatePtr initialStatePtr(new SearchState());
     
     for (int i = 0; i < MAX_AGENT_COUNT; i++)
     {
@@ -72,7 +72,7 @@ bool search(const Board& board, SearchResultData& resultData)
     while (openedList.size() > 0)
     {
         StatePtr statePtr = openedList.top();
-
+        //statePtr->print_state(board);
         openedList.pop();
 
 #pragma region CHECK_STATE_CLOSED_OR_GOAL_STATE
@@ -91,11 +91,11 @@ bool search(const Board& board, SearchResultData& resultData)
             break;
         }
        
-        /*bool allAgentsArrived = true;
+       /* bool allAgentsArrived = true;
 
         for (int i = 0; i < MAX_AGENT_COUNT; i++)
         {
-            if (state.agents[i].desiredTargets.size() > 0)
+            if (statePtr->agents[i].desiredTargets.size() > 0)
             {
                 allAgentsArrived = false;
                 break;
@@ -104,7 +104,7 @@ bool search(const Board& board, SearchResultData& resultData)
 
         if (allAgentsArrived)
         {
-            resultData.finalState = state;
+            resultData.finalState = statePtr;
             isPathFound = true;
             break;
         }*/
@@ -237,11 +237,7 @@ void printPathTrace(const Board& board, const StatePtr& statePtr)
     if (not statePtr->parent.is_null())
         printPathTrace(board, statePtr->parent);
 
-    for (int i = 0; i < MAX_AGENT_COUNT; i++) if(statePtr->agents[i].index != -1)
-    {
-        Position p = board.getPosition(statePtr->agents[i].index);
-        printf("\n[A%1d] Floor %2d, ROW = %3d, COL = %3d", i, p.z, p.x, p.y);
-    }
+    statePtr->print_state(board);
 }
 
 int main()

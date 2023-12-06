@@ -15,7 +15,7 @@ std::size_t SearchState::operator()(const SearchState& searchState)
 
 bool SearchState::operator()(const SearchState& a, const SearchState& b)
 {
-    return true;
+    return a.time < b.time;
 }
 
 bool SearchState::operator==(const SearchState& other) const

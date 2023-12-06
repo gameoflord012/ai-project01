@@ -48,8 +48,7 @@ bool search(const Board& board, SearchResultData& resultData)
 #pragma endregion
 
 #pragma region INIT_INITIAL_STATE_AND_OPENED_LIST
-    StatePtr initialStatePtr = new SearchState();
-    statePtrList.push_back(initialStatePtr);
+    StatePtr initialStatePtr(new SearchState);
     
     for (int i = 0; i < MAX_AGENT_COUNT; i++)
     {
@@ -73,7 +72,6 @@ bool search(const Board& board, SearchResultData& resultData)
     while (openedList.size() > 0)
     {
         StatePtr statePtr = openedList.top();
-        const SearchState& state = statePtr.value();
 
         openedList.pop();
 
@@ -84,9 +82,11 @@ bool search(const Board& board, SearchResultData& resultData)
             closedList.insert(statePtr);
         }
 
-        if (state.agents[0].desiredTargets.size() == 0)
+        statePtrList.push_back(statePtr);
+
+        if (statePtr->agents[0].desiredTargets.size() == 0) // state is final state
         {
-            resultData.finalState = &state;
+            resultData.finalState = statePtr;
             isPathFound = true;
             break;
         }
@@ -113,20 +113,19 @@ bool search(const Board& board, SearchResultData& resultData)
 #pragma endregion
    
 #pragma region PROCESS_NEXT_STATE
-        int iagent = state.time % MAX_AGENT_COUNT;
+        int iagent = statePtr->time % MAX_AGENT_COUNT;
 
         if (boardData.agentIndexList[iagent] == -1) // agent don't exist
         {
-            StatePtr nextStatePtr = new SearchState(state);
+            StatePtr nextStatePtr(new SearchState(statePtr.value()));
 
             nextStatePtr.value().time += 1;
-            statePtrList.push_back(nextStatePtr);
-
             openedList.push(nextStatePtr);
+
             continue;
         }
 
-        auto agentState = state.agents[iagent];
+        const AgentState& agentState = statePtr->agents[iagent];
 
         if (agentState.index == -1) continue;
         if (agentState.desiredTargets.size() == 0) continue;
@@ -135,13 +134,12 @@ bool search(const Board& board, SearchResultData& resultData)
 
         for (int idir = 0; idir < DIR_SIZE; idir++)
         {
-            StatePtr nextStatePtr = new SearchState(state);
-            SearchState& nextState = nextStatePtr.value();
+            StatePtr nextStatePtr(new SearchState(statePtr.value()));
 
-            nextState.time += 1;
-            nextState.parent = &state;
+            nextStatePtr->time += 1;
+            nextStatePtr->parent = statePtr;
 
-            AgentState& nextAgentState = nextState.agents[iagent];
+            AgentState& nextAgentState = nextStatePtr->agents[iagent];
 
             Position nextAgentPosition = {
                 agentPosition.x + DIR_X[idir],
@@ -186,7 +184,7 @@ bool search(const Board& board, SearchResultData& resultData)
             bool anotherAgentOccured = false;
             for (int jagent = 0; jagent < MAX_AGENT_COUNT; jagent++)
             {
-                if (iagent != jagent && nextAgentIndex == state.agents[jagent].index)
+                if (iagent != jagent && nextAgentIndex == statePtr->agents[jagent].index)
                 {
                     anotherAgentOccured = true;
                     break;
@@ -200,32 +198,32 @@ bool search(const Board& board, SearchResultData& resultData)
             {
                 nextAgentState.index = board.getIndex(nextAgentPosition); // update new state
                 if (nextAgentState.desiredTargets.size() > 0 && 
-                    nextAgentState.desiredTargets.back() == nextAgentIndex) //arrive at most recent desire target
+                    nextAgentState.desiredTargets.back() == nextAgentIndex) //if arrive at most recent desire target
                 {
                     nextAgentState.desiredTargets.pop_back();
                 }
             }
-            else
+            else if (board.isTile(nextAgentPosition, DOOR) and not noDoorOrHasKey) //Step on door tile but have no key for the door
             {
-                if (board.isTile(nextAgentPosition, DOOR) and not noDoorOrHasKey) //Step on door tile but have no key for the door
+                int requiredKey = GET_MASK_INDEX(tileValue);
+                int keyIndex = boardData.keyIndexList[requiredKey];
+
+                if (COUNT(nextAgentState.desiredTargets, nextAgentIndex) == 0) //Add door to desire target
                 {
-                    int requiredKey = GET_MASK_INDEX(tileValue);
-                    int keyIndex = boardData.keyIndexList[requiredKey];
+                    nextAgentState.desiredTargets.push_back(nextAgentIndex);
+                }
 
-                    if (COUNT(nextAgentState.desiredTargets, nextAgentIndex) == 0) //Add door to desire target
-                    {
-                        nextAgentState.desiredTargets.push_back(nextAgentIndex);
-                    }
-
-                    if (COUNT(nextAgentState.desiredTargets, keyIndex) == 0)
-                    {
-                        nextAgentState.desiredTargets.push_back(keyIndex); // Add key to desire target
-                    }
+                if (COUNT(nextAgentState.desiredTargets, keyIndex) == 0)
+                {
+                    nextAgentState.desiredTargets.push_back(keyIndex); // Add key to desire target
                 }
             }
+            else
+            {
+                continue;
+            }
 
-            statePtrList.push_back(&nextState);
-            openedList.push(&nextState);
+            openedList.push(nextStatePtr);
         }
     }
 

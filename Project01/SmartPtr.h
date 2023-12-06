@@ -6,24 +6,34 @@ template<typename T>
 struct SmartPtr
 {
 public:
-	SmartPtr(const T* ptr)
+	SmartPtr(const T* raw_ptr)
 	{
-		_ptr = std::shared_ptr<T>((T*)ptr);
+		_shared_ptr = std::shared_ptr<T>((T*)raw_ptr);
+	}
+
+	SmartPtr(const SmartPtr& ptr)
+	{
+		_shared_ptr = ptr._shared_ptr;
 	}
 
 	SmartPtr()
 	{
-		_ptr = nullptr;
+		_shared_ptr = nullptr;
 	}
 
-	T* ptr() const
+	std::shared_ptr<T> shared_ptr() const
 	{
-		return _ptr.get();
+		return _shared_ptr;
 	}
 
 	T& value() const
 	{
-		return *ptr();
+		return *_shared_ptr;
+	}
+
+	T* operator->() const
+	{
+		return _shared_ptr.get();
 	}
 
 	std::size_t operator()(const SmartPtr<T>& ptr) const
@@ -36,22 +46,19 @@ public:
 		return T{}(a.value(), b.value());
 	}
 
+	bool operator==(const SmartPtr<T>& other) const
+	{
+		return this->value() == other.value();
+	}
 
 	bool is_null() const
 	{
-		return _ptr == nullptr;
+		return _shared_ptr == nullptr;
 	}
 
 private:
-	std::shared_ptr<T> _ptr;
+	std::shared_ptr<T> _shared_ptr;
 };
-
-template<typename T>
-bool operator==(const SmartPtr<T>& left, const SmartPtr<T>& right)
-{
-	return left.value() == right.value();
-}
-
 
 
 

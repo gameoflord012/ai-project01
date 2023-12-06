@@ -30,24 +30,11 @@ struct SearchState
     SmartPtr<SearchState> parent;
 
     std::size_t operator()(const SearchState& searchState);
-    bool operator()(const SearchState& a, const SearchState& b);
-
-
     bool operator==(const SearchState& other) const;
-    
-    /*PriorityValue getHeuristicValue(const Board& board);*/
+    bool operator()(const SearchState& a, const SearchState& b); // State Comparator
 };
 
 typedef SmartPtr<SearchState> StatePtr;
-//template class SmartPtr<SearchState>;
-//		if (a.mainAgentHCost != b.mainAgentHCost) return a.mainAgentHCost > b.mainAgentHCost;
-//		return a.subAgentHCost > b.subAgentHCost;
-//	}
-//
-//bool operator==(const StatePtr& left, const StatePtr& right)
-//{
-//    return left.operator==(right);
-//}
 
 struct SearchResultData
 {

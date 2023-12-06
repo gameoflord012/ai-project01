@@ -20,7 +20,7 @@ float SearchState::get_heuristice_value()
     for (int i = 0; i < MAX_AGENT_COUNT; i++)
     {
         float mod = i == 0 ? MAIN_AGENT_SCALE : 0;
-        h_value += agents[i].get_heuristic_value(board) * mod;
+        h_value += agents[i].get_heuristic_value(*board) * mod;
     }
 
     return h_value;

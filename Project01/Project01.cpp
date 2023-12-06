@@ -232,15 +232,14 @@ bool search(const Board& board, SearchResultData& resultData)
     return isPathFound;
 }
 
-void printPathTrace(const Board& board, const SearchState& traceState)
+void printPathTrace(const Board& board, const StatePtr& statePtr)
 {
-    if (traceState.parent.is_null()) 
-        printPathTrace(board, traceState.parent.value());
+    if (not statePtr->parent.is_null())
+        printPathTrace(board, statePtr->parent);
 
-    
-    for (int i = 0; i < MAX_AGENT_COUNT; i++) if(traceState.agents[i].index != -1)
+    for (int i = 0; i < MAX_AGENT_COUNT; i++) if(statePtr->agents[i].index != -1)
     {
-        Position p = board.getPosition(traceState.agents[i].index);
+        Position p = board.getPosition(statePtr->agents[i].index);
         printf("\n[A%1d] Floor %2d, ROW = %3d, COL = %3d", i, p.z, p.x, p.y);
     }
 }
@@ -270,7 +269,7 @@ int main()
     NEW_PRINT_SECTION(INPUT);
     printf("\nRead inputs:");
 
-    while (fscanf_s(inputFile, "\n[%[^]]]", buffer, sizeof(buffer)) != EOF)
+    while (fscanf_s(inputFile, "\n[%[^]]]", buffer, sizeof(buffer)))
     {
         printf("\n%s", buffer);
         for (int i = 0; i < nRows; i++)
@@ -301,7 +300,7 @@ int main()
     if (isSearchSuccess)
     {
         printf("\npath go:");
-        printPathTrace(*board, resultData.finalState.value());
+        printPathTrace(*board, resultData.finalState);
         //printPathTrace(*board, resultData.stateData, resultData.finalState);
 
         resultData.printResult();

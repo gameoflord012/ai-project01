@@ -2,49 +2,28 @@
 
 #include <vector>
 
+#include "Board.h"
+#include "HashUtils.h"
+
 
 struct AgentState
 {
 	int index = 0;
 	int keyMask = 0;
-	int targetCount = 0;
+	int point = 0;
 
 	std::vector<int> desiredTargets;
 
-    bool operator==(const AgentState& other) const
-    {
-        bool isEqual =
-            index == other.index and
-            keyMask == other.keyMask and
-            targetCount == other.targetCount;
+    bool operator==(const AgentState& other) const;
+    float get_heuristic_value(const Board& board);
 
-        if (desiredTargets.size() != other.desiredTargets.size())
-        {
-            return false;
-        }
-
-        for (int i = 0; i < desiredTargets.size(); i++)
-        {
-            if (desiredTargets[i] != other.desiredTargets[i])
-            {
-                isEqual = false;
-                break;
-            }
-        }
-
-        return isEqual;
-    }
-};
-
-template<>
-struct hash<AgentState>
-{
     std::size_t operator()(const AgentState& agents) const {
         size_t hashValue = 0;
 
         hash_combine(hashValue, agents.index);
         hash_combine(hashValue, agents.keyMask);
-        hash_combine(hashValue, agents.targetCount);
+        hash_combine(hashValue, agents.point);
+
         for (int e : agents.desiredTargets) hash_combine(hashValue, e);
 
         return hashValue;

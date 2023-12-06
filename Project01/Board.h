@@ -41,8 +41,15 @@ struct BoardData
     int agentIndexList[MAX_AGENT_COUNT];
     int targetIndexList[MAX_AGENT_COUNT];
 
+    vector<int> floor_index_list;
+
     int keyIndexList[MAX_KEY_COUNT];
     int doorIndexList[MAX_KEY_COUNT];
+
+    int generate_random_target_index(int seed)
+    {
+        return floor_index_list[seed % floor_index_list.size()];
+    }
 
     void printBoardData()
     {
@@ -99,6 +106,10 @@ struct Board
             {
                 int p = ROUND_INT(log2(value >> 4));
                 data.doorIndexList[p] = i;
+            }
+            else if ((value & 0xF) == FLOOR)
+            {
+                data.floor_index_list.push_back(i);
             }
         }
 
@@ -170,6 +181,18 @@ struct Board
     {
         if (getIndex(p) < 0) return false;
         return (gridData[getIndex(p)] & 0xF) == c;
+    }
+
+    enum { };
+
+    float estimate_distance(int ia, int ib, bool is_euclidean = false) const
+    {
+        assert(ia != -1 && ib != -1);
+        
+        if(is_euclidean)
+            return getPosition(ia).distance(getPosition(ib));
+        else
+            return getPosition(ia).mahattan_distance(getPosition(ib));
     }
 
     std::vector<int> gridData;

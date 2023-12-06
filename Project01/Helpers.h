@@ -1,6 +1,8 @@
 #pragma once
 
 #include <algorithm>
+#include <ostream>
+#include <string>
 
 #define ROUND_INT(x) ((int)(x + 0.5f))
 #define STRING_EQUAL(x, y) (strcmp(x, y) == 0)
@@ -9,4 +11,5 @@
 #define FIRST_ON_BIT_POSITION(x) (ROUND_INT(log2(x)))
 #define COUNT(ar, e) ((std::count(ar.begin(), ar.end(), e)))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
+
 using byte = char;

@@ -13,7 +13,7 @@ SearchState::SearchState(const shared_ptr<Board> board)
     this->board = board;
 }
 
-float SearchState::get_heuristice_value(const Board& board)
+float SearchState::get_heuristice_value()
 {
     float h_value = time;
 

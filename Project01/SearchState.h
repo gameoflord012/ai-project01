@@ -30,7 +30,7 @@ struct SearchState
     SmartPtr<SearchState> parent;
     shared_ptr<Board> board;
 
-    float get_heuristice_value(const Board& board);
+    float get_heuristice_value();
 
     std::size_t operator()(const SearchState& searchState);
     bool operator==(const SearchState& other) const;

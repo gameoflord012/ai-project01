@@ -1,5 +1,30 @@
+#include "Config.h"
+
 #include "SearchState.h"
 #include "Helpers.h"
+
+#ifndef MAIN_AGENT_SCALE
+#define MAIN_AGENT_SCALE 1000
+#endif // !MAIN_AGENT_SCALE
+
+
+SearchState::SearchState(const shared_ptr<Board> board)
+{
+    this->board = board;
+}
+
+float SearchState::get_heuristice_value(const Board& board)
+{
+    float h_value = time;
+
+    for (int i = 0; i < MAX_AGENT_COUNT; i++)
+    {
+        float mod = i == 0 ? MAIN_AGENT_SCALE : 0;
+        h_value += agents[i].get_heuristic_value(board) * mod;
+    }
+
+    return h_value;
+}
 
 std::size_t SearchState::operator()(const SearchState& searchState)
 {
@@ -13,7 +38,7 @@ std::size_t SearchState::operator()(const SearchState& searchState)
     return hashValue;
 }
 
-bool SearchState::operator()(const SearchState& a, const SearchState& b)
+bool SearchState::operator()(const SearchState& a, const SearchState& b) const
 {
     return a.time > b.time;
 }
@@ -45,45 +70,6 @@ bool SearchState::operator==(const SearchState& other) const
     return true;
 }
 
-//PriorityValue SearchState::getHeuristicValue(const Board& board)
-//{
-//    PriorityValue priorityValue;
-//    for (int i = 0; i < MAX_AGENT_COUNT; i++)
-//    {
-//        Position p = board.getPosition(agents[i].index);
-//        float expectedCost = 0;
-//
-//        for (int e : agents[i].desiredTargets)
-//        {
-//            expectedCost += p.distance(board.getPosition(e));
-//        }
-//
-//        if (i == 0) priorityValue.mainAgentHCost = expectedCost;
-//        else
-//            priorityValue.subAgentHCost += expectedCost;
-//    }
-//
-//    return priorityValue;
-//}
-
-//bool operator==(const SearchState& left, const SearchState& right)
-//{
-//    for (int i = 0; i < MAX_AGENT_COUNT; i++)
-//    {
-//        if (not(left.agents[i] == right.agents[i]))
-//        {
-//            return false;
-//        }
-//    }
-//
-//    if (left.time % MAX_AGENT_COUNT != right.time % MAX_AGENT_COUNT)
-//    {
-//        return false;
-//    }
-//
-//    return true;
-//}
-
 int SearchResultData::getPathCost()
 {
     return (finalState.value().time + MAX_AGENT_COUNT - 1) / MAX_AGENT_COUNT;
@@ -98,7 +84,7 @@ void SearchResultData::printResult()
 {
     printf("\nSearch State Count: %d", getSearchStateCount());
     printf("\nPath cost: %d", getPathCost());
-    printf("\nTime elapsed: %f miliseconds", timeElapsedInMiniSeconds);
+    printf("\nTime elapsed: %ud miliseconds", timeElapsedInMiniSeconds);
 }
 
 bool operator==(const SearchState& left, const SearchState& right)

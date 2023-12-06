@@ -172,6 +172,12 @@ struct Board
         return (gridData[getIndex(p)] & 0xF) == c;
     }
 
+    float estimate_distance(int ia, int ib) const
+    {
+        assert(ia != -1 && ib != -1);
+        return getPosition(ia).distance(getPosition(ib));
+    }
+
     std::vector<int> gridData;
     Position dim;
 };

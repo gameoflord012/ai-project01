@@ -20,18 +20,21 @@
 
 struct SearchState
 {
-    AgentState agents[MAX_AGENT_COUNT];
+    SearchState(const shared_ptr<Board> board);
 
+    // use for compare
+    AgentState agents[MAX_AGENT_COUNT];
     int time = 0;
 
-    /*int stateIndex = -1;
-    int parentStateIndex = -1;*/
-
+    // not use for compare
     SmartPtr<SearchState> parent;
+    shared_ptr<Board> board;
+
+    float get_heuristice_value(const Board& board);
 
     std::size_t operator()(const SearchState& searchState);
     bool operator==(const SearchState& other) const;
-    bool operator()(const SearchState& a, const SearchState& b); // State Comparator
+    bool operator()(const SearchState& a, const SearchState& b) const; // State Comparator
 
     void print_state(const Board& board);
 };

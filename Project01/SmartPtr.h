@@ -38,12 +38,12 @@ public:
 
 	std::size_t operator()(const SmartPtr<T>& ptr) const
 	{
-		return T{}(ptr.value());
+		return ptr.value()(ptr.value());
 	}
 
-	bool operator()(const SmartPtr<T>& a, const SmartPtr<T>& b)
+	bool operator()(const SmartPtr<T>& a, const SmartPtr<T>& b) const
 	{
-		return T{}(a.value(), b.value());
+		return a.value()(a.value(), b.value());
 	}
 
 	bool operator==(const SmartPtr<T>& other) const

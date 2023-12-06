@@ -25,7 +25,7 @@ using MinHeap = std::priority_queue < T, std::vector<T>, T > ;
 typedef MinHeap<StatePtr> SearchHeap;
 typedef unordered_set < StatePtr, StatePtr > UniqueSet;
 
-bool search(const Board& board, SearchResultData& resultData)
+bool search(const shared_ptr<Board> board, SearchResultData& resultData)
 {
     NEW_PRINT_SECTION(SEARCHING)
 
@@ -43,12 +43,12 @@ bool search(const Board& board, SearchResultData& resultData)
     const int DIR_Y[] = { 0, 1, 0,  0, -1,  1, -1, -1, 1 };
     const int DIR_SIZE = 5;
 
-    BoardData boardData = board.getBoardData();
+    BoardData boardData = board->getBoardData();
     boardData.printBoardData();
 #pragma endregion
 
 #pragma region INIT_INITIAL_STATE_AND_OPENED_LIST
-    StatePtr initialStatePtr(new SearchState());
+    StatePtr initialStatePtr(new SearchState(board));
     
     for (int i = 0; i < MAX_AGENT_COUNT; i++)
     {
@@ -130,7 +130,7 @@ bool search(const Board& board, SearchResultData& resultData)
         if (agentState.index == -1) continue;
         if (agentState.desiredTargets.size() == 0) continue;
 
-        Position agentPosition = board.getPosition(agentState.index);
+        Position agentPosition = board->getPosition(agentState.index);
 
         for (int idir = 0; idir < DIR_SIZE; idir++)
         {
@@ -147,16 +147,16 @@ bool search(const Board& board, SearchResultData& resultData)
                 agentPosition.z
             };
 
-            int nextAgentIndex = board.getIndex(nextAgentPosition);
+            int nextAgentIndex = board->getIndex(nextAgentPosition);
 
 #pragma region UPDATE_STAIR_POSITION
             if (DIR_X[idir] == 0 and DIR_Y[idir] == 0)
             {
-                if (board.isTile(nextAgentPosition, STAIR_UP))
+                if (board->isTile(nextAgentPosition, STAIR_UP))
                 {
                     nextAgentPosition.z += 1;
                 }
-                else if (board.isTile(nextAgentPosition, STAIR_DOWN))
+                else if (board->isTile(nextAgentPosition, STAIR_DOWN))
                 {
                     nextAgentPosition.z -= 1;
                 }
@@ -164,21 +164,21 @@ bool search(const Board& board, SearchResultData& resultData)
 #pragma endregion
 
 #pragma region UPDATE_KEY_MASK
-            if (board.isTile(nextAgentPosition, KEY))
+            if (board->isTile(nextAgentPosition, KEY))
             {
-                nextAgentState.keyMask |= GET_MASK(board.getBoardValue(nextAgentPosition));
+                nextAgentState.keyMask |= GET_MASK(board->getBoardValue(nextAgentPosition));
             }
 #pragma endregion
 
             
 #pragma region CHECK_TILE_VALID_AND_UPD_BOOLEAN
-            if (board.getIndex(nextAgentPosition) == -1) continue;
-            if (board.isTile(nextAgentPosition, OBSTACLE)) continue;
+            if (board->getIndex(nextAgentPosition) == -1) continue;
+            if (board->isTile(nextAgentPosition, OBSTACLE)) continue;
 
-            int tileValue = board.getBoardValue(nextAgentPosition);
+            int tileValue = board->getBoardValue(nextAgentPosition);
 
             bool noDoorOrHasKey =
-                not board.isTile(nextAgentPosition, DOOR) or
+                not board->isTile(nextAgentPosition, DOOR) or
                 VALUE_CONTAIN_MASK(tileValue, nextAgentState.keyMask);
 
             bool anotherAgentOccured = false;
@@ -196,14 +196,18 @@ bool search(const Board& board, SearchResultData& resultData)
 
             if (isTileValid)
             {
-                nextAgentState.index = board.getIndex(nextAgentPosition); // update new state
+                nextAgentState.index = board->getIndex(nextAgentPosition); // update new state
                 if (nextAgentState.desiredTargets.size() > 0 && 
-                    nextAgentState.desiredTargets.back() == nextAgentIndex) //if arrive at most recent desire target
+                    nextAgentState.desiredTargets.back() == nextAgentIndex) //if arrive at a desire target
                 {
                     nextAgentState.desiredTargets.pop_back();
+                    if (nextAgentState.desiredTargets.size() == 0) // desire target is a target
+                    { // gain point
+                        nextAgentState.point += 1;
+                    }
                 }
             }
-            else if (board.isTile(nextAgentPosition, DOOR) and not noDoorOrHasKey) //Step on door tile but have no key for the door
+            else if (board->isTile(nextAgentPosition, DOOR) and not noDoorOrHasKey) //Step on door tile but have no key for the door
             {
                 int requiredKey = GET_MASK_INDEX(tileValue);
                 int keyIndex = boardData.keyIndexList[requiredKey];
@@ -290,7 +294,7 @@ int main()
 
     SearchResultData resultData;
 
-    bool isSearchSuccess = search(*board, resultData);
+    bool isSearchSuccess = search(board, resultData);
 
     NEW_PRINT_SECTION(RESULT)
     if (isSearchSuccess)

@@ -11,8 +11,8 @@ struct Position
         return x == other.x and y == other.y and z == other.z;
     }
 
-    std::size_t operator()(const Position& position) const {
-        size_t hashResult = 0;
+    unsigned int operator()(const Position& position) const {
+        unsigned int hashResult = 0;
 
         return hashResult;
     }
@@ -39,8 +39,8 @@ namespace std
     template<>
     struct hash<Position>
     {
-        std::size_t operator()(const Position& p) const {
-            size_t hashResult = 0;
+        unsigned int operator()(const Position& p) const {
+            unsigned int hashResult = 0;
             hash_combine(hashResult, p.x);
             hash_combine(hashResult, p.y);
             hash_combine(hashResult, p.z);

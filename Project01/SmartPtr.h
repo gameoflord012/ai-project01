@@ -36,7 +36,7 @@ public:
 		return _shared_ptr.get();
 	}
 
-	std::size_t operator()(const SmartPtr<T>& ptr) const
+	unsigned int operator()(const SmartPtr<T>& ptr) const
 	{
 		return ptr.value()(ptr.value());
 	}

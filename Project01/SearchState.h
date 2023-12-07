@@ -32,11 +32,11 @@ struct SearchState
 
     float get_heuristice_value();
 
-    std::size_t operator()(const SearchState& searchState);
+    unsigned int operator()(const SearchState& searchState);
     bool operator==(const SearchState& other) const;
     bool operator()(const SearchState& a, const SearchState& b) const; // State Comparator
 
-    void print_state(const Board& board);
+    void print_state(const Board& board, bool exclude_unchanged_state = false);
 };
 
 typedef SmartPtr<SearchState> StatePtr;
@@ -45,9 +45,10 @@ struct SearchResultData
 {
     std::vector<StatePtr> statePtrList;
     StatePtr finalState;
-    size_t timeElapsedInMiniSeconds = 0;
+    unsigned int timeElapsedInMiniSeconds = 0;
 
     int getPathCost();
+    int getPointCount();
     int getSearchStateCount();
     void printResult();
 };

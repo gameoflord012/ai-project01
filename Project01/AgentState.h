@@ -17,8 +17,8 @@ struct AgentState
     bool operator==(const AgentState& other) const;
     float get_heuristic_value(const Board& board);
 
-    std::size_t operator()(const AgentState& agents) const {
-        size_t hashValue = 0;
+    unsigned int operator()(const AgentState& agents) const {
+        unsigned int hashValue = 0;
 
         hash_combine(hashValue, agents.index);
         hash_combine(hashValue, agents.keyMask);

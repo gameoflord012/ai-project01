@@ -7,6 +7,11 @@
 #define MAIN_AGENT_SCALE 1000
 #endif // !MAIN_AGENT_SCALE
 
+#ifndef MAX_AGENT_COUNT
+#define MAX_AGENT_COUNT 9
+#endif // !MAX_AGENT_COUNT
+
+
 
 SearchState::SearchState(const shared_ptr<Board> board)
 {
@@ -26,9 +31,9 @@ float SearchState::get_heuristice_value()
     return h_value;
 }
 
-std::size_t SearchState::operator()(const SearchState& searchState)
+unsigned int SearchState::operator()(const SearchState& searchState)
 {
-    size_t hashValue = 0;
+    unsigned int hashValue = 0;
 
     for (int i = 0; i < MAX_AGENT_COUNT; i++)
     {
@@ -43,16 +48,24 @@ bool SearchState::operator()(const SearchState& a, const SearchState& b) const
     return a.time > b.time;
 }
 
-void SearchState::print_state(const Board& board)
+void SearchState::print_state(const Board& board, bool exclude_unchanged_state)
 {
     for (int i = 0; i < MAX_AGENT_COUNT; i++) if (agents[i].index != -1)
     {
+        if (exclude_unchanged_state && time % MAX_AGENT_COUNT != i)
+            continue;
+
         Position p = board.getPosition(agents[i].index);
-        printf("\n\033[1;%dm[A%1d] | Tid=%2d | Floor=%2d | ROW=%2d | COL=%2d\033[0m | time=%2d", 
+        printf("\n\033[1;%dm[A%1d] || Tid=%2d || Floor=%2d || POS=2%d 2%d || time=%2d\033[0m", 
             40 + i, i, 
             agents[i].desiredTargets.size() > 0 ? agents[i].desiredTargets[0] : -1, 
-            p.z, p.x, p.y, time);
+            p.z, p.x, p.y, 
+            (time + MAX_AGENT_COUNT - 1) / MAX_AGENT_COUNT);
+
+
+        if (time % MAX_AGENT_COUNT == i + 1) printf("|<<");
     }
+    printf("\n==================================================");
 }
 
 bool SearchState::operator==(const SearchState& other) const
@@ -78,6 +91,16 @@ int SearchResultData::getPathCost()
     return (finalState.value().time + MAX_AGENT_COUNT - 1) / MAX_AGENT_COUNT;
 }
 
+int SearchResultData::getPointCount()
+{
+    int count = 0;
+    for (const AgentState& a : finalState->agents)
+    {
+        count += a.point;
+    }
+    return count;
+}
+
 int SearchResultData::getSearchStateCount()
 {
     return statePtrList.size();
@@ -87,6 +110,7 @@ void SearchResultData::printResult()
 {
     printf("\nSearch State Count: %d", getSearchStateCount());
     printf("\nPath cost: %d", getPathCost());
+    printf("\nPoint: %d", getPointCount());
     printf("\nTime elapsed: %ud miliseconds", timeElapsedInMiniSeconds);
 }
 

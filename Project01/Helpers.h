@@ -31,7 +31,7 @@ inline unsigned generate_seed(const T& v)
 		global::random_seed_value = std::chrono::system_clock::now().time_since_epoch().count();
 	}
 
-	size_t seed = global::random_seed_value;
+	unsigned int seed = global::random_seed_value;
 	hash_combine(seed, v);
 	return seed;
 }

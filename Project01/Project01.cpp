@@ -123,7 +123,8 @@ bool search(const shared_ptr<Board> board, SearchResultData& resultData)
         {
             StatePtr nextStatePtr(new SearchState(statePtr.value()));
 
-            nextStatePtr.value().time += 1;
+            nextStatePtr->time += 1;
+            nextStatePtr->parent = statePtr;
             openedList.push(nextStatePtr);
 
             continue;
@@ -257,7 +258,7 @@ void printPathTrace(const Board& board, const StatePtr& statePtr)
     if (not statePtr->parent.is_null())
         printPathTrace(board, statePtr->parent);
 
-    statePtr->print_state(board);
+    statePtr->print_state(board, true);
 }
 
 int main()

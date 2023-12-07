@@ -50,11 +50,24 @@ bool SearchState::operator()(const SearchState& a, const SearchState& b) const
 
 void SearchState::print_state(const Board& board, bool exclude_unchanged_state)
 {
+    
+    if (exclude_unchanged_state && time != 0)
+    {
+        bool should_exclude = true;
+
+        for(int i = 0; i < MAX_AGENT_COUNT; i++) if (
+            agents[i].index != -1 && 
+            (time - 1 + MAX_AGENT_COUNT) % MAX_AGENT_COUNT == i)
+        {
+            should_exclude = false;
+            break;
+        }
+
+        if (should_exclude) return;
+    }
+
     for (int i = 0; i < MAX_AGENT_COUNT; i++) if (agents[i].index != -1)
     {
-        if (exclude_unchanged_state && time % MAX_AGENT_COUNT != i)
-            continue;
-
         Position p = board.getPosition(agents[i].index);
         printf("\n\033[1;%dm[A%1d] || Tid=%2d || Floor=%2d || POS=2%d 2%d || time=%2d\033[0m", 
             40 + i, i, 
@@ -63,7 +76,7 @@ void SearchState::print_state(const Board& board, bool exclude_unchanged_state)
             (time + MAX_AGENT_COUNT - 1) / MAX_AGENT_COUNT);
 
 
-        if (time % MAX_AGENT_COUNT == i + 1) printf("|<<");
+        if ((time - 1 + MAX_AGENT_COUNT) % MAX_AGENT_COUNT == i) printf("|<<");
     }
     printf("\n==================================================");
 }

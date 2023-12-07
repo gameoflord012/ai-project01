@@ -132,7 +132,7 @@ struct Board
         {
             if(RANDOM_SEED == -1)
             shuffle(e.begin(), e.end(), 
-                std::default_random_engine(get_seed(gridData))
+                std::default_random_engine(generate_seed(gridData))
             );
         }
 

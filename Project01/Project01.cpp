@@ -31,7 +31,7 @@ bool search(const shared_ptr<Board> board, SearchResultData& resultData)
     NEW_PRINT_SECTION(SEARCHING)
 
     auto start_timer = std::chrono::high_resolution_clock::now();
-    size_t search_seed = get_seed(std::string("SEARCH_SEED_MESSI_IS_DA_G.O.A.T"));
+    size_t search_seed = generate_seed(std::string("SEARCH_SEED_MESSI_IS_DA_G.O.A.T"));
     //size_t search_seed = 0;
 
 #pragma region DECLARE_VALUES
@@ -212,7 +212,7 @@ bool search(const shared_ptr<Board> board, SearchResultData& resultData)
                         if (iagent != 0)
                         {
                             
-                            auto seed = get_seed(nextStatePtr);
+                            auto seed = generate_seed(nextStatePtr);
                             nextAgentState.desiredTargets.push_back(
                                 boardData.generate_random_target_index(seed, nextAgentPosition.z));
                         }

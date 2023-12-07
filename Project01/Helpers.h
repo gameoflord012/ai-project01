@@ -24,7 +24,7 @@ namespace global
 }
 
 template<typename T>
-inline unsigned get_seed(const T& v)
+inline unsigned generate_seed(const T& v)
 {
 	if (global::random_seed_value == -1)
 	{

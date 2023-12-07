@@ -9,8 +9,8 @@
 #include <queue>
 #include <unordered_set>
 #include <algorithm>
-#include <chrono>
 #include <functional>   
+#include <chrono>
 
 #include "Config.h"
 
@@ -31,7 +31,8 @@ bool search(const shared_ptr<Board> board, SearchResultData& resultData)
     NEW_PRINT_SECTION(SEARCHING)
 
     auto start_timer = std::chrono::high_resolution_clock::now();
-    size_t search_seed = static_cast<size_t>(start_timer.time_since_epoch().count());
+    size_t search_seed = get_seed(std::string("SEARCH_SEED_MESSI_IS_DA_G.O.A.T"));
+    //size_t search_seed = 0;
 
 #pragma region DECLARE_VALUES
     SearchHeap openedList;
@@ -210,9 +211,10 @@ bool search(const shared_ptr<Board> board, SearchResultData& resultData)
 
                         if (iagent != 0)
                         {
-                            size_t seed = search_seed;
-                            hash_combine(seed, nextStatePtr);
-                            nextAgentState.desiredTargets.push_back(boardData.generate_random_target_index(seed));
+                            
+                            auto seed = get_seed(nextStatePtr);
+                            nextAgentState.desiredTargets.push_back(
+                                boardData.generate_random_target_index(seed, nextAgentPosition.z));
                         }
                     }
                 }

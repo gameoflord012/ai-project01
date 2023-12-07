@@ -48,7 +48,10 @@ void SearchState::print_state(const Board& board)
     for (int i = 0; i < MAX_AGENT_COUNT; i++) if (agents[i].index != -1)
     {
         Position p = board.getPosition(agents[i].index);
-        printf("\n\033[1;%dm[A%1d] Floor=%2d, ROW=%2d, COL=%2d\033[0m, time=%2d", 40 + i, i, p.z, p.x, p.y, time);
+        printf("\n\033[1;%dm[A%1d] | Tid=%2d | Floor=%2d | ROW=%2d | COL=%2d\033[0m | time=%2d", 
+            40 + i, i, 
+            agents[i].desiredTargets.size() > 0 ? agents[i].desiredTargets[0] : -1, 
+            p.z, p.x, p.y, time);
     }
 }
 

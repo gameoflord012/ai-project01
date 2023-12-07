@@ -161,13 +161,13 @@
       <PreprocessorDefinitions>
       </PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\sfml\SFML-2.6.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./imgui;./imgui/backends;.\glfw\glfw-3.3.8.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\sfml\SFML-2.6.1\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.\glfw\glfw-3.3.8.bin.WIN64\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;glfw3dll.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Kat|x64'">
@@ -206,6 +206,15 @@
   <ItemGroup>
     <ClCompile Include="AgentState.cpp" />
     <ClCompile Include="Board.cpp" />
+    <ClCompile Include="GuiBoard.cpp" />
+    <ClCompile Include="GuiBoard.h" />
+    <ClCompile Include="imgui\imgui-1.90\backends\imgui_impl_glfw.cpp" />
+    <ClCompile Include="imgui\imgui-1.90\backends\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="imgui\imgui-1.90\imgui.cpp" />
+    <ClCompile Include="imgui\imgui-1.90\imgui_demo.cpp" />
+    <ClCompile Include="imgui\imgui-1.90\imgui_draw.cpp" />
+    <ClCompile Include="imgui\imgui-1.90\imgui_tables.cpp" />
+    <ClCompile Include="imgui\imgui-1.90\imgui_widgets.cpp" />
     <ClCompile Include="Project01.cpp" />
     <ClCompile Include="SearchState.cpp" />
     <ClCompile Include="SmartPtr.cpp" />
@@ -216,6 +225,14 @@
     <ClInclude Include="Config.h" />
     <ClInclude Include="HashUtils.h" />
     <ClInclude Include="Helpers.h" />
+    <ClInclude Include="imgui\imgui-1.90\backends\imgui_impl_glfw.h" />
+    <ClInclude Include="imgui\imgui-1.90\backends\imgui_impl_opengl3.h" />
+    <ClInclude Include="imgui\imgui-1.90\imconfig.h" />
+    <ClInclude Include="imgui\imgui-1.90\imgui.h" />
+    <ClInclude Include="imgui\imgui-1.90\imgui_internal.h" />
+    <ClInclude Include="imgui\imgui-1.90\imstb_rectpack.h" />
+    <ClInclude Include="imgui\imgui-1.90\imstb_textedit.h" />
+    <ClInclude Include="imgui\imgui-1.90\imstb_truetype.h" />
     <ClInclude Include="Position.h" />
     <ClInclude Include="PriorityValue.h" />
     <ClInclude Include="SearchState.h" />

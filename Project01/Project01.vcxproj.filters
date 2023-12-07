@@ -19,6 +19,9 @@
     <Filter Include="imgui\backend">
       <UniqueIdentifier>{24ec41f0-fcdb-4673-8e9f-563454a1b672}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GUI_KAT">
+      <UniqueIdentifier>{f6017a9d-4433-4d5e-a1dc-a273bcfece07}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SearchState.cpp">
@@ -35,6 +38,33 @@
     </ClCompile>
     <ClCompile Include="Project01.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui-1.90\imgui.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui-1.90\imgui_demo.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui-1.90\imgui_draw.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui-1.90\imgui_tables.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui-1.90\imgui_widgets.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui-1.90\backends\imgui_impl_glfw.cpp">
+      <Filter>imgui\backend</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui-1.90\backends\imgui_impl_opengl3.cpp">
+      <Filter>imgui\backend</Filter>
+    </ClCompile>
+    <ClCompile Include="GuiBoard.h">
+      <Filter>GUI_KAT</Filter>
+    </ClCompile>
+    <ClCompile Include="GuiBoard.cpp">
+      <Filter>GUI_KAT</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -64,6 +94,30 @@
     </ClInclude>
     <ClInclude Include="SmartPtr.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui-1.90\imconfig.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui-1.90\imgui.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui-1.90\imgui_internal.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui-1.90\imstb_rectpack.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui-1.90\imstb_textedit.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui-1.90\imstb_truetype.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui-1.90\backends\imgui_impl_glfw.h">
+      <Filter>imgui\backend</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui-1.90\backends\imgui_impl_opengl3.h">
+      <Filter>imgui\backend</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

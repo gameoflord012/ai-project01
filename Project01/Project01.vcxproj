@@ -217,7 +217,6 @@
     <ClCompile Include="include\sfml\imgui-sfml-2.6\imgui-SFML.cpp" />
     <ClCompile Include="helper.cpp" />
     <ClCompile Include="Position.cpp" />
-    <ClCompile Include="Project01.cpp" />
     <ClCompile Include="Search.cpp" />
     <ClCompile Include="SearchState.cpp" />
     <ClCompile Include="SmartPtr.cpp" />

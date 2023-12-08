@@ -1,5 +1,7 @@
 #include "Config.h"
 
+#include <vector>
+
 #include "SearchState.h"
 #include "Helpers.h"
 
@@ -24,7 +26,7 @@ float SearchState::get_heuristice_value()
 
     for (int i = 0; i < MAX_AGENT_COUNT; i++)
     {
-        float mod = i == 0 ? MAIN_AGENT_SCALE : 0;
+        float mod = i == 0 ? MAIN_AGENT_SCALE : 1;
         h_value += agents[i].get_heuristic_value(*board) * mod;
     }
 
@@ -48,7 +50,7 @@ bool SearchState::operator()(const SearchState& a, const SearchState& b) const
     return a.time > b.time;
 }
 
-void SearchState::print_state(const Board& board, bool exclude_unchanged_state)
+void SearchState::print_state(bool exclude_unchanged_state) const
 {
     
     if (exclude_unchanged_state && time != 0)
@@ -68,7 +70,7 @@ void SearchState::print_state(const Board& board, bool exclude_unchanged_state)
 
     for (int i = 0; i < MAX_AGENT_COUNT; i++) if (agents[i].index != -1)
     {
-        Position p = board.getPosition(agents[i].index);
+        Position p = board->getPosition(agents[i].index);
         printf("\n\033[1;%dm[A%1d] || Tid=%2d || Floor=%2d || POS=2%d 2%d || time=%2d\033[0m", 
             40 + i, i, 
             agents[i].desiredTargets.size() > 0 ? agents[i].desiredTargets[0] : -1, 
@@ -79,6 +81,16 @@ void SearchState::print_state(const Board& board, bool exclude_unchanged_state)
         if ((time - 1 + MAX_AGENT_COUNT) % MAX_AGENT_COUNT == i) printf("|<<");
     }
     printf("\n==================================================");
+}
+
+void SearchState::trace_state(std::vector<SearchState>& result, SmartPtr<SearchState> statePtr)
+{
+    if (not statePtr->parent.is_null())
+        trace_state(result, statePtr->parent);
+    else
+        result.clear();
+
+    result.push_back(statePtr.value());
 }
 
 bool SearchState::operator==(const SearchState& other) const
@@ -99,6 +111,13 @@ bool SearchState::operator==(const SearchState& other) const
     return true;
 }
 
+vector<SearchState> SearchResultData::get_path()
+{
+    vector<SearchState> result;
+    finalState->trace_state(result, finalState);
+    return result;
+}
+
 int SearchResultData::getPathCost()
 {
     return (finalState.value().time + MAX_AGENT_COUNT - 1) / MAX_AGENT_COUNT;
@@ -117,6 +136,14 @@ int SearchResultData::getPointCount()
 int SearchResultData::getSearchStateCount()
 {
     return statePtrList.size();
+}
+
+void SearchResultData::print_path()
+{
+    for (const SearchState& state : get_path())
+    {
+        state.print_state(true);
+    }
 }
 
 void SearchResultData::printResult()

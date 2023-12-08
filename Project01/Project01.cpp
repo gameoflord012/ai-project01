@@ -253,14 +253,6 @@ bool search(const shared_ptr<Board> board, SearchResultData& resultData)
     return isPathFound;
 }
 
-void printPathTrace(const Board& board, const StatePtr& statePtr)
-{
-    if (not statePtr->parent.is_null())
-        printPathTrace(board, statePtr->parent);
-
-    statePtr->print_state(board, true);
-}
-
 int main()
 {
     shared_ptr<Board> board;
@@ -317,7 +309,7 @@ int main()
     if (isSearchSuccess)
     {
         printf("\npath go:");
-        printPathTrace(*board, resultData.finalState);
+        resultData.print_path();
         //printPathTrace(*board, resultData.stateData, resultData.finalState);
 
         resultData.printResult();

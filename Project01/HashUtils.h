@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <string>
+#include <vector>
 
 template <typename T>
 inline void hash_combine(unsigned int& s, const T& v);

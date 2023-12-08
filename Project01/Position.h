@@ -7,31 +7,12 @@ struct Position
 {
     int x, y, z;
 
-    bool equals(const Position& other) const {
-        return x == other.x and y == other.y and z == other.z;
-    }
+    bool equals(const Position& other) const;
+    
+    unsigned int operator()(const Position& position) const;
 
-    unsigned int operator()(const Position& position) const {
-        unsigned int hashResult = 0;
-
-        return hashResult;
-    }
-
-    float distance(const Position& p) const 
-    {
-        return std::sqrt(
-            std::pow(p.x - x, 2) +
-            std::pow(p.y - y, 2) +
-            std::pow(p.z - z, 2));
-    }
-
-    int mahattan_distance(const Position& p)
-    {
-        return
-            std::abs(p.x - x) +
-            std::abs(p.y - y) +
-            std::abs(p.z - z);
-    }
+    float distance(const Position& p) const;
+    int mahattan_distance(const Position& p);
 };
 
 namespace std

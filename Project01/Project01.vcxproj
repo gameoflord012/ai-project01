@@ -142,6 +142,7 @@
     <ClCompile Include="AgentState.cpp" />
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="helper.cpp" />
+    <ClCompile Include="Position.cpp" />
     <ClCompile Include="Project01.cpp" />
     <ClCompile Include="SearchState.cpp" />
     <ClCompile Include="SmartPtr.cpp" />
@@ -153,7 +154,6 @@
     <ClInclude Include="HashUtils.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="Position.h" />
-    <ClInclude Include="PriorityValue.h" />
     <ClInclude Include="SearchState.h" />
     <ClInclude Include="SmartPtr.h" />
   </ItemGroup>

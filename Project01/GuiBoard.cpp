@@ -15,6 +15,9 @@ GuiBoard::GuiBoard(const shared_ptr<Board> board, SearchResultData resultData)
 	nCols = board->dim.y;
 	nFloors = board->dim.z;
 	this->resultData = resultData;
+	stateList = resultData.get_path();
+
+	stateListIterator = 0;
 }
 
 void GuiBoard::drawHeatMap(sf::RenderWindow& window)
@@ -25,7 +28,20 @@ void GuiBoard::drawUi(sf::RenderWindow& window)
 {
 	// Button says Next
 	ImGui::Begin("Toolbox");
-	ImGui::Button("To next step");
+	// This toolbox shall do these tasks:
+	// - Change color (background, table)
+
+	if (stateListIterator < stateList.size())
+	{
+		// Check if reached end. Then not showing button
+		if (ImGui::Button("To the next state"))
+		{
+			// Update board to another board
+			this->board = stateList[stateListIterator].board;
+			//drawBoard(window);
+			stateListIterator++;
+		}
+	}
 	ImGui::End();
 	ImGui::SFML::Render(window);
 }
@@ -91,11 +107,11 @@ void GuiBoard::run()
 
 	sf::Event event;
 
-	sf::RenderWindow window(sf::VideoMode(800, 600), "SFML works!");
+	sf::RenderWindow window(sf::VideoMode(1000, 800), "Project 01 - KAT GUI");
 	window.setFramerateLimit(60);
 	ImGui::SFML::Init(window);
 
-	float viewSpeed = 200.f;
+	float viewSpeed = 300.f;
 	sf::View view(sf::FloatRect(0, 0, 800, 600));
 	view.setCenter(window.getSize().x / 2, window.getSize().y / 2);
 
@@ -110,8 +126,20 @@ void GuiBoard::run()
 		while (window.pollEvent(event))
 		{
 			ImGui::SFML::ProcessEvent(event);
-			if (event.type == sf::Event::Closed)
+			switch (event.type) {
+			case sf::Event::Closed:
+			{
 				window.close();
+				break;
+			}
+			case sf::Event::Resized:
+			{
+				window.setView(view);
+				view.setSize(event.size.width, event.size.height);
+				window.setView(view);
+				break;
+			}
+			}
 		}
 
 		ImGui::SFML::Update(window, dtClock.restart());
@@ -120,25 +148,27 @@ void GuiBoard::run()
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 		{
 			view.move(-viewSpeed * dt, 0);
+			window.setView(view);
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 		{
 			view.move(viewSpeed * dt, 0);
+			window.setView(view);
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 		{
 			view.move(0, -viewSpeed * dt);
+			window.setView(view);
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 		{
 			view.move(0, viewSpeed * dt);
+			window.setView(view);
 		}
 
 		// Render
 		window.clear(customColor_1);
-		window.setView(view);
 
-		
 		drawBoard(window);
 		drawUi(window);
 		//drawHeatMap(window);
@@ -150,56 +180,26 @@ void GuiBoard::run()
 
 int main()
 {
+	SearchResultData resultData;
 	shared_ptr<Board> board;
 
-#pragma region READ_BOARD
-	int nCols, nRows;
-	FILE* inputFile;
+	algorithm::read(board, "../input/inp.txt");
+	bool isSearchSuccess = algorithm::search(board, resultData);
 
-	if (fopen_s(&inputFile, "../input/inp.txt", "r") != 0)
-	{
-		printf("file not found");
-		return -1;
-	}
-
-	wrap_fscanf_s(inputFile, "%d,", &nRows);
-	wrap_fscanf_s(inputFile, "%d", &nCols);
-
-	board = make_shared<Board>(nRows, nCols);
-
-	char buffer[50];
-	int curBoardZ = 0;
-
-	NEW_PRINT_SECTION(INPUT);
-	printf("\nRead inputs:");
-
-	while (fscanf_s(inputFile, "\n[%[^]]]", buffer, sizeof(buffer)))
-	{
-		printf("\n%s", buffer);
-		for (int i = 0; i < nRows; i++)
+	NEW_PRINT_SECTION(RESULT)
+		if (isSearchSuccess)
 		{
-			printf("\n");
-			for (int j = 0; j < nCols; j++)
-			{
-				fscanf_s(inputFile, "%[, \n]", buffer, sizeof(buffer));
-				wrap_fscanf_s(inputFile, "%[^, \n]", buffer, sizeof(buffer));
+			printf("\nPath go:");
+			resultData.print_path();
 
-				board->setBoardData({ i, j, curBoardZ }, buffer);
-				printf("%2s|", buffer);
-			}
+			resultData.printResult();
 		}
-		curBoardZ++;
-	}
+		else
+		{
+			printf("\nNo solution found");
+		}
 
-	board->printBoard(curBoardZ);
-
-	fclose(inputFile);
-#pragma endregion
-
-	
-	
-	GuiBoard guiBoard(board);
-
+	GuiBoard guiBoard(board, resultData);
 
 	guiBoard.run();
 	return 0;

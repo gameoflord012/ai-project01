@@ -14,6 +14,8 @@
 #include "Board.h"
 #include "SearchState.h"
 #include "SmartPtr.h"
+#include "Search.h"
+#include "Helpers.h"
 
 const sf::Color customColor_1 = sf::Color(95, 35, 107); // Background
 const sf::Color customColor_2 = sf::Color(190, 55, 95); // Cell color
@@ -43,10 +45,17 @@ public:
 
 private:
 	shared_ptr<Board> board;
+	StatePtr statePtr;
+
 	int nRows;
 	int nCols;
 	int nFloors;
+	int stateListIterator; // This is integer because I dont want to use pointer	
+
 	SearchResultData resultData;
+	vector<SearchState> stateList;
+
+
 	sf::RenderWindow window;
 	sf::Sprite map_sprite;
 	sf::Texture font_texture;

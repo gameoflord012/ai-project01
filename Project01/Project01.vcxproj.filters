@@ -69,6 +69,9 @@
     <ClCompile Include="include\sfml\imgui-sfml-2.6\imgui-SFML.cpp">
       <Filter>imgui\sfml</Filter>
     </ClCompile>
+    <ClCompile Include="helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Position.h">

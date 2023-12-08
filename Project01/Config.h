@@ -5,4 +5,6 @@
 
 #define DESIRE_TARGET_DISTANCE_MOD 0.1f
 #define AGENT_POINT_MOD 10
-#define MAIN_AGENT_SCALE 1000
+#define MAIN_AGENT_SCALE 1
+
+#define GLOBAL_SEED -1 // -1 for auto generatation

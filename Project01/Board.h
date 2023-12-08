@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 #include <cassert>
+#include <set>
+#include <random>
 
 #include "Position.h"
 #include "Helpers.h"
@@ -22,6 +24,11 @@
 #define MAX_KEY_COUNT 9
 #endif // !MAX_KEY_COUNT
 
+#ifndef RANDOM_SEED
+#define RANDOM_SEED -1
+#endif // !RANDOM_SEED
+
+
 using namespace std;
 
 enum BoardTile
@@ -41,14 +48,22 @@ struct BoardData
     int agentIndexList[MAX_AGENT_COUNT];
     int targetIndexList[MAX_AGENT_COUNT];
 
-    vector<int> floor_index_list;
+    vector<int> floor_index_list[MAX_BOARD_HEIGHT];
 
     int keyIndexList[MAX_KEY_COUNT];
     int doorIndexList[MAX_KEY_COUNT];
 
-    int generate_random_target_index(int seed)
+    int generate_random_target_index(uint seed, int level, const set<int>& exclude_list = set<int>())
     {
-        return floor_index_list[seed % floor_index_list.size()];
+        int random_index = -1;
+
+        do
+        {
+            random_index = floor_index_list[level][seed % floor_index_list[level].size()];
+            seed += 1;
+        } while (exclude_list.count(random_index) > 0);
+
+        return random_index;
     }
 
     void printBoardData()
@@ -72,7 +87,7 @@ struct Board
         dim.y = nCols;
         dim.z = nHeight;
 
-        gridData.resize(dim.x * dim.y * dim.z);
+        gridData.resize(dim.x * dim.y * dim.z, -1);
     }
 
     BoardData getBoardData() const
@@ -109,8 +124,16 @@ struct Board
             }
             else if ((value & 0xF) == FLOOR)
             {
-                data.floor_index_list.push_back(i);
+                data.floor_index_list[getPosition(i).z].push_back(i);
             }
+        }
+
+        for (auto e : data.floor_index_list)
+        {
+            if(RANDOM_SEED == -1)
+            shuffle(e.begin(), e.end(), 
+                std::default_random_engine(generate_seed(gridData))
+            );
         }
 
         return data;

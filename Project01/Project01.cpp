@@ -9,8 +9,8 @@
 #include <queue>
 #include <unordered_set>
 #include <algorithm>
-#include <chrono>
 #include <functional>   
+#include <chrono>
 
 #include "Config.h"
 
@@ -31,7 +31,8 @@ bool search(const shared_ptr<Board> board, SearchResultData& resultData)
     NEW_PRINT_SECTION(SEARCHING)
 
     auto start_timer = std::chrono::high_resolution_clock::now();
-    size_t search_seed = static_cast<size_t>(start_timer.time_since_epoch().count());
+    unsigned int search_seed = generate_seed(std::string("SEARCH_SEED_MESSI_IS_DA_G.O.A.T"));
+    //unsigned int search_seed = 0;
 
 #pragma region DECLARE_VALUES
     SearchHeap openedList;
@@ -122,7 +123,8 @@ bool search(const shared_ptr<Board> board, SearchResultData& resultData)
         {
             StatePtr nextStatePtr(new SearchState(statePtr.value()));
 
-            nextStatePtr.value().time += 1;
+            nextStatePtr->time += 1;
+            nextStatePtr->parent = statePtr;
             openedList.push(nextStatePtr);
 
             continue;
@@ -210,9 +212,14 @@ bool search(const shared_ptr<Board> board, SearchResultData& resultData)
 
                         if (iagent != 0)
                         {
-                            size_t seed = search_seed;
-                            hash_combine(seed, nextStatePtr);
-                            nextAgentState.desiredTargets.push_back(boardData.generate_random_target_index(seed));
+                            uint seed = 0;
+                            hash_combine(seed, nextAgentState.index);
+                            hash_combine(seed, nextAgentState.point);
+                            hash_combine(seed, iagent);
+                            seed = generate_seed(seed);
+
+                            nextAgentState.desiredTargets.push_back(
+                                boardData.generate_random_target_index(seed, nextAgentPosition.z));
                         }
                     }
                 }
@@ -251,7 +258,7 @@ void printPathTrace(const Board& board, const StatePtr& statePtr)
     if (not statePtr->parent.is_null())
         printPathTrace(board, statePtr->parent);
 
-    statePtr->print_state(board);
+    statePtr->print_state(board, true);
 }
 
 int main()

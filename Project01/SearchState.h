@@ -36,7 +36,8 @@ struct SearchState
     bool operator==(const SearchState& other) const;
     bool operator()(const SearchState& a, const SearchState& b) const; // State Comparator
 
-    void print_state(const Board& board, bool exclude_unchanged_state = false);
+    void print_state(bool exclude_unchanged_state = false) const;
+    void trace_state(std::vector<SearchState>& result, SmartPtr<SearchState> statePtr);
 };
 
 typedef SmartPtr<SearchState> StatePtr;
@@ -47,8 +48,11 @@ struct SearchResultData
     StatePtr finalState;
     unsigned int timeElapsedInMiniSeconds = 0;
 
+    vector<SearchState> get_path();
+
     int getPathCost();
     int getPointCount();
     int getSearchStateCount();
+    void print_path();
     void printResult();
 };

@@ -4,6 +4,7 @@
 #include <set>
 #include <random>
 
+#include "Config.h"
 #include "Position.h"
 
 #define GET_BOARD_VALUE(X, Y) ((1 << X << 4) | Y)
@@ -41,7 +42,7 @@ enum BoardTile
     STAIR_DOWN,
 };
 
-struct BoardData
+SEARCH_API struct BoardData
 {
     int agentIndexList[MAX_AGENT_COUNT];
     int targetIndexList[MAX_AGENT_COUNT];
@@ -56,7 +57,7 @@ struct BoardData
     void printBoardData();
 };
 
-struct Board
+SEARCH_API struct Board
 {
     Board(int nRows, int nCols, int nHeight = MAX_BOARD_HEIGHT);
 

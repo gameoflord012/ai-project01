@@ -1,9 +1,10 @@
 #pragma once
 #include <cmath>
 
+#include "Config.h"
 #include "HashUtils.h"
 
-struct Position
+SEARCH_API struct Position
 {
     int x, y, z;
 

@@ -126,6 +126,8 @@ int Board::getValue(const char* raw)
     else if (raw[0] == 'T') return GET_BOARD_VALUE(raw[1] - '1', TARGET);
     else if (raw[0] == 'K') return GET_BOARD_VALUE(raw[1] - '1', KEY);
     else if (raw[0] == 'D') return GET_BOARD_VALUE(raw[1] - '1', DOOR);
+
+    assert(0);
 }
 
 void Board::printBoard(int maxHeight)

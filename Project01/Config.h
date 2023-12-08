@@ -1,5 +1,11 @@
 #pragma once
 
+#ifdef EXPORT
+	#define SEARCH_API __declspec(dllexport)
+#else
+	#define SEARCH_API __declspec(dllimport)
+#endif // EXPORT
+
 #define MAX_BOARD_HEIGHT 10
 #define MAX_AGENT_COUNT 9
 #define MAX_KEY_COUNT 9

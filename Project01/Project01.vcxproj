@@ -118,7 +118,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>EXPORT</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -144,7 +144,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>EXPORT</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -158,8 +158,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>
-      </PreprocessorDefinitions>
+      <PreprocessorDefinitions>EXPORT</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>./include/imgui/imgui-1.90;./include/imgui/imgui-1.90/backends;./include/sfml/imgui-sfml-2.6;./include/glfw/glfw-3.3.8.bin.WIN64/include;./include/sfml/SFML-2.6.1/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -191,7 +190,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>SFML_STATIC</PreprocessorDefinitions>
+      <PreprocessorDefinitions>EXPORT</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\sfml\SFML-2.6.1\include</AdditionalIncludeDirectories>
     </ClCompile>
@@ -217,6 +216,9 @@
     <ClCompile Include="include\imgui\imgui-1.90\imgui_widgets.cpp" />
     <ClCompile Include="include\sfml\imgui-sfml-2.6\imgui-SFML.cpp" />
     <ClCompile Include="helper.cpp" />
+    <ClCompile Include="Position.cpp" />
+    <ClCompile Include="Project01.cpp" />
+    <ClCompile Include="Search.cpp" />
     <ClCompile Include="SearchState.cpp" />
     <ClCompile Include="SmartPtr.cpp" />
   </ItemGroup>
@@ -237,7 +239,7 @@
     <ClInclude Include="include\sfml\imgui-sfml-2.6\imgui-SFML.h" />
     <ClInclude Include="include\sfml\imgui-sfml-2.6\imgui-SFML_export.h" />
     <ClInclude Include="Position.h" />
-    <ClInclude Include="PriorityValue.h" />
+    <ClInclude Include="Search.h" />
     <ClInclude Include="SearchState.h" />
     <ClInclude Include="SmartPtr.h" />
   </ItemGroup>

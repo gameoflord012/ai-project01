@@ -18,7 +18,7 @@
 #define MAX_KEY_COUNT 9
 #endif // !MAX_AGENT_COUNT
 
-struct SearchState
+SEARCH_API struct SearchState
 {
     SearchState(const shared_ptr<Board> board);
 
@@ -42,7 +42,7 @@ struct SearchState
 
 typedef SmartPtr<SearchState> StatePtr;
 
-struct SearchResultData
+SEARCH_API struct SearchResultData
 {
     std::vector<StatePtr> statePtrList;
     StatePtr finalState;

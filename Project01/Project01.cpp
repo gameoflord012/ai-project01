@@ -22,6 +22,7 @@
 
 
 using namespace std;
+using namespace Search;
 
 template <typename T>
 using MinHeap = std::priority_queue < T, std::vector<T>, T > ;

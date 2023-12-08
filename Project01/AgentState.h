@@ -5,7 +5,6 @@
 #include "Board.h"
 #include "HashUtils.h"
 
-
 struct AgentState
 {
 	int index = 0;
@@ -14,8 +13,8 @@ struct AgentState
 
 	std::vector<int> desiredTargets;
 
-    bool operator==(const AgentState& other) const;
+	bool operator==(const AgentState& other) const;
 	unsigned int operator()(const AgentState& agents) const;
 
-    float get_heuristic_value(const Board& board);
+	float get_heuristic_value(const Board& board);
 };

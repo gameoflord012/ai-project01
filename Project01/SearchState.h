@@ -18,6 +18,11 @@
 #define MAX_KEY_COUNT 9
 #endif // !MAX_AGENT_COUNT
 
+namespace Search
+{
+
+}
+
 struct SearchState
 {
     SearchState(const shared_ptr<Board> board);

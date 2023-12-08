@@ -18,6 +18,8 @@
 #include "Board.h"
 #include "SearchState.h"
 #include "SmartPtr.h"
+#include "Helpers.h"
+
 
 using namespace std;
 

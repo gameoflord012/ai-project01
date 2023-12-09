@@ -398,13 +398,13 @@ FodyWeavers.xsd
 *.sln.iml
 
 # SFML
-*/sfml
-
-# GLUT
-*/glut
+*/SFML-2.6.1-windows-vc16-64-bit
+*/SFML-2.6.1-windows-vc16-32-bit
+*/imgui-sfml-2.6
 
 # IMGUI
-*/imgui
+*/imgui-1.90
 
 # GLFW
-*/glfw
+*/glfw-3.3.8.bin.WIN64
+*/glfw-3.3.8.bin.WIN32

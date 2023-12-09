@@ -109,7 +109,7 @@ bool algorithm::search(const shared_ptr<Board> board, SearchResultData& resultDa
             StatePtr nextStatePtr(new SearchState(statePtr.value()));
 
             nextStatePtr->time += 1;
-            nextStatePtr->parent = statePtr;
+            nextStatePtr->parent = statePtr.shared_ptr();
             openedList.push(nextStatePtr);
 
             continue;
@@ -127,7 +127,7 @@ bool algorithm::search(const shared_ptr<Board> board, SearchResultData& resultDa
             StatePtr nextStatePtr(new SearchState(statePtr.value()));
 
             nextStatePtr->time += 1;
-            nextStatePtr->parent = statePtr;
+            nextStatePtr->parent = statePtr.shared_ptr();
 
             AgentState& nextAgentState = nextStatePtr->agents[iagent];
 

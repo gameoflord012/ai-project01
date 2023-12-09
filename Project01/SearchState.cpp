@@ -24,6 +24,7 @@
 SearchState::SearchState(const shared_ptr<Board> board)
 {
     this->board = board;
+    parent.reset();
 }
 
 float SearchState::get_heuristice_value()
@@ -63,22 +64,6 @@ bool SearchState::operator()(const SearchState& a, const SearchState& b) const
 
 void SearchState::print_state(bool exclude_unchanged_state) const
 {
-    
-    if (exclude_unchanged_state && time != 0)
-    {
-        bool should_exclude = true;
-
-        for(int i = 0; i < MAX_AGENT_COUNT; i++) if (
-            agents[i].index != -1 && 
-            (time - 1 + MAX_AGENT_COUNT) % MAX_AGENT_COUNT == i)
-        {
-            should_exclude = false;
-            break;
-        }
-
-        if (should_exclude) return;
-    }
-
     for (int i = 0; i < MAX_AGENT_COUNT; i++) if (agents[i].index != -1)
     {
         Position p = board->getPosition(agents[i].index);
@@ -94,14 +79,14 @@ void SearchState::print_state(bool exclude_unchanged_state) const
     printf("\n==================================================");
 }
 
-void SearchState::trace_state(std::vector<SearchState>& result, SmartPtr<SearchState> statePtr)
+void SearchState::trace_state(std::vector<SearchState>& result, shared_ptr<SearchState> statePtr)
 {
-    if (not statePtr->parent.is_null())
-        trace_state(result, statePtr->parent);
+    if (not statePtr->parent.expired())
+        trace_state(result, statePtr->parent.lock());
     else
         result.clear();
 
-    result.push_back(statePtr.value());
+    result.push_back(*statePtr);
 }
 
 bool SearchState::operator==(const SearchState& other) const
@@ -122,10 +107,30 @@ bool SearchState::operator==(const SearchState& other) const
     return true;
 }
 
-vector<SearchState> SearchResultData::get_path()
+vector<SearchState> SearchResultData::get_path(bool exclude_unchanged_state)
 {
+    vector<SearchState> trace;
+    finalState->trace_state(trace, finalState.shared_ptr());
+
+    if (not exclude_unchanged_state) return trace;
+
     vector<SearchState> result;
-    finalState->trace_state(result, finalState);
+
+    for (const SearchState& state : trace)  if (state.time != 0)
+    {
+            bool should_exclude = true;
+
+            for (int i = 0; i < MAX_AGENT_COUNT; i++) if (
+                state.agents[i].index != -1 &&
+                (state.time - 1 + MAX_AGENT_COUNT) % MAX_AGENT_COUNT == i)
+            {
+                should_exclude = false;
+                break;
+            }
+
+            if (not should_exclude) result.push_back(state);
+    }
+
     return result;
 }
 

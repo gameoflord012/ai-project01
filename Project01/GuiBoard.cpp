@@ -30,11 +30,13 @@ void GuiBoard::drawHeatMap(sf::RenderWindow& window)
 void GuiBoard::drawUi(sf::RenderWindow& window)
 {
 	// Button says Next
-	ImGui::Begin("Toolbox");
+	ImGui::SetNextWindowPos(ImVec2(window.getSize().x - ImGui::GetWindowWidth(), 0), ImGuiCond_Always);
+	ImGui::Begin("Toolbox", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 	// This toolbox shall do these tasks:
 	// 1. Change current state
 	// 2. Show current time
 	// 3. Show log
+
 
 	// Change current state
 	if (ImGui::SliderInt("State", &stateListIterator, 0, stateList.size()))
@@ -43,6 +45,8 @@ void GuiBoard::drawUi(sf::RenderWindow& window)
 		updateBoard();
 	}
 
+	ImGui::Text("Solution found. Slide the bar to see agents location across states");
+
 	if (ImGui::Button("To next State"))
 	{
 		if (stateListIterator < stateList.size())
@@ -50,7 +54,6 @@ void GuiBoard::drawUi(sf::RenderWindow& window)
 			// Check if reached end. Then not showing button
 			stateListIterator++;
 			updateBoard();
-
 		}
 	}
 	if (ImGui::Button("To previous State"))
@@ -59,7 +62,6 @@ void GuiBoard::drawUi(sf::RenderWindow& window)
 		{
 			stateListIterator--;
 			updateBoard();
-
 		}
 	}
 
@@ -77,12 +79,15 @@ void GuiBoard::drawUi(sf::RenderWindow& window)
 
 void GuiBoard::drawBoard(sf::RenderWindow& window)
 {
-	int cellSize = 100;
-	int textMargin = 10;
-	int cellMargin = 20;
-
 	// Get the max number of board in a row. This is used to arrange floors in square formation
 	int nGridWidth = ceil(sqrt(nFloors));
+
+	mapSize = min(window.getSize().x, window.getSize().y) / nGridWidth;
+	cellSize = mapSize / max(nRows, nCols);
+	textSize = cellSize / 2;
+	cellMargin = cellSize / 2;
+	textMargin = cellSize / 10;
+	cellBorder = cellSize / 20;
 
 	int gridRow = 0;
 	for (int k = 0; k < nFloors; k++)
@@ -100,10 +105,16 @@ void GuiBoard::drawBoard(sf::RenderWindow& window)
 				// Get cell value
 				int value = board->getBoardValue(Position({ i, j, k }));
 
+
 				// Draw cell
 				sf::RectangleShape cell(sf::Vector2f(cellSize, cellSize));
 				cell.setFillColor(customColor_2);
-				cell.setOutlineThickness(5);
+				if (value == OBSTACLE)
+				{
+					cell.setFillColor(sf::Color(129, 129, 129));
+				}
+				
+				cell.setOutlineThickness(cellBorder);
 				cell.setOutlineColor(customColor_3);
 
 				int pos_x = ((k % nGridWidth) * (cellSize * nCols + cellMargin)) + (j * cellSize);
@@ -114,7 +125,7 @@ void GuiBoard::drawBoard(sf::RenderWindow& window)
 				// Draw text
 				sf::Text text;
 				text.setFont(font);
-				text.setCharacterSize(20);
+				text.setCharacterSize(textSize);
 				text.setFillColor(textColor_Wall);
 				text.setStyle(sf::Text::Bold);
 				text.setPosition(pos_x + textMargin, pos_y + textMargin);
@@ -144,7 +155,7 @@ void GuiBoard::updateBoard()
 	{
 		if (stateList[stateListIterator - 1].agents[i].index != -1)
 		{
-			newAgentPosList.push_back(stateList[stateListIterator - 1].board->getPosition(stateList[stateListIterator-1].agents[i].index));
+			newAgentPosList.push_back(stateList[stateListIterator - 1].board->getPosition(stateList[stateListIterator - 1].agents[i].index));
 		}
 	}
 
@@ -182,6 +193,8 @@ void GuiBoard::run()
 	int windowHeight = 1080;
 
 	float dt;
+	float viewSpeed = 300.f;
+	float zoomView = 1.0f;
 
 	sf::Event event;
 
@@ -189,7 +202,6 @@ void GuiBoard::run()
 	window.setFramerateLimit(60);
 	ImGui::SFML::Init(window);
 
-	float viewSpeed = 300.f;
 	sf::View view(sf::FloatRect(0, 0, windowWidth, windowHeight));
 	view.setCenter(window.getSize().x / 2, window.getSize().y / 2);
 	window.setView(view);
@@ -260,24 +272,35 @@ int main()
 	SearchResultData resultData;
 	shared_ptr<Board> board;
 
-	algorithm::read(board, "../input/input2-level4.txt");
-	bool isSearchSuccess = algorithm::search(board, resultData);
-
-	NEW_PRINT_SECTION(RESULT)
-		if (isSearchSuccess)
+	try
+	{
+		if (algorithm::read(board, "../input/input1-level3.txt") == false)
 		{
-			printf("\nPath go:");
-			resultData.print_path();
-
-			resultData.printResult();
-		}
-		else
-		{
-			printf("\nNo solution found");
+			throw "Cannot read file";
 		}
 
-	GuiBoard guiBoard(board, resultData);
-	guiBoard.run();
+		bool isSearchSuccess = algorithm::search(board, resultData);
+
+		NEW_PRINT_SECTION(RESULT)
+			if (isSearchSuccess)
+			{
+				printf("\nPath go:");
+				resultData.print_path();
+
+				resultData.printResult();
+			}
+			else
+			{
+				printf("\nNo solution found");
+			}
+
+		GuiBoard guiBoard(board, resultData);
+		guiBoard.run();
+	}
+	catch (const char* msg)
+	{
+		printf("\n%s", msg);
+	}
 	return 0;
 }
 

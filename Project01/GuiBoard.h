@@ -17,15 +17,15 @@
 #include "Search.h"
 #include "Helpers.h"
 
-const sf::Color customColor_1 = sf::Color(95, 35, 107); // Background
-const sf::Color customColor_2 = sf::Color(190, 55, 95); // Cell color
+const sf::Color customColor_1 = sf::Color(121, 121, 210); // Background
+const sf::Color customColor_2 = sf::Color(217, 217, 217); // Cell color
 const sf::Color customColor_3 = sf::Color(237, 133, 84); // Border color
-const sf::Color textColor_Stair = sf::Color(255, 212, 229); // Text color 1
-const sf::Color textColor_Wall = sf::Color(186, 255, 255); // Text color 5
+const sf::Color textColor_Stair = sf::Color(102, 0, 255); // Text color 1
+const sf::Color textColor_Wall = sf::Color(255, 204, 153); // Text color 5
 
 // list of colors for agent/target
 const sf::Color agent_target_ColorList[MAX_AGENT_COUNT] = {
-	sf::Color(255, 0, 0),
+	sf::Color(153, 0, 0),
 	sf::Color(0, 255, 0),
 	sf::Color(0, 0, 255),
 	sf::Color(255, 255, 0),
@@ -38,8 +38,8 @@ const sf::Color agent_target_ColorList[MAX_AGENT_COUNT] = {
 
 // list of colors for key/door
 const sf::Color key_door_ColorList[MAX_KEY_COUNT] = {
-	sf::Color(255, 0, 0),
-	sf::Color(0, 255, 0),
+	sf::Color(102, 0, 204),
+	sf::Color(204, 41, 0),
 	sf::Color(0, 0, 255),
 	sf::Color(255, 255, 0),
 	sf::Color(255, 0, 255),
@@ -74,6 +74,13 @@ private:
 	int nCols;
 	int nFloors;
 	int stateListIterator; // This is integer because I dont want to use pointer	
+
+	int mapSize; // Map holds board that holds cells
+	int textSize = 20;
+	int cellSize = 100;
+	int textMargin = 10;
+	int cellMargin = 20;
+	int cellBorder = 5;
 
 	SearchResultData resultData;
 	vector<SearchState> stateList;

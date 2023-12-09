@@ -11,11 +11,11 @@
 #include "Search.h"
 #include "Helpers.h"
 
-bool SEARCH_API algorithm::search(const shared_ptr<Board> board, SearchResultData& resultData)
+bool algorithm::search(const shared_ptr<Board> board, SearchResultData& resultData)
 {
     NEW_PRINT_SECTION(SEARCHING)
 
-        auto start_timer = std::chrono::high_resolution_clock::now();
+    auto start_timer = std::chrono::high_resolution_clock::now();
     unsigned int search_seed = generate_seed(std::string("SEARCH_SEED_MESSI_IS_DA_G.O.A.T"));
     //unsigned int search_seed = 0;
 
@@ -109,7 +109,7 @@ bool SEARCH_API algorithm::search(const shared_ptr<Board> board, SearchResultDat
             StatePtr nextStatePtr(new SearchState(statePtr.value()));
 
             nextStatePtr->time += 1;
-            nextStatePtr->parent = statePtr;
+            nextStatePtr->parent = statePtr.shared_ptr();
             openedList.push(nextStatePtr);
 
             continue;
@@ -127,7 +127,7 @@ bool SEARCH_API algorithm::search(const shared_ptr<Board> board, SearchResultDat
             StatePtr nextStatePtr(new SearchState(statePtr.value()));
 
             nextStatePtr->time += 1;
-            nextStatePtr->parent = statePtr;
+            nextStatePtr->parent = statePtr.shared_ptr();
 
             AgentState& nextAgentState = nextStatePtr->agents[iagent];
 
@@ -263,6 +263,8 @@ bool algorithm::read(shared_ptr<Board>& board, const char* filepath)
 
     while (fscanf_s(inputFile, "\n[%[^]]]", buffer, sizeof(buffer)))
     {
+        if (buffer[0] != 'f') break;
+
         printf("\n%s", buffer);
         for (int i = 0; i < nRows; i++)
         {
@@ -286,3 +288,5 @@ bool algorithm::read(shared_ptr<Board>& board, const char* filepath)
     return true;
 #pragma endregion   
 }
+
+bool global::use_heuristic = false;

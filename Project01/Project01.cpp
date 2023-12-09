@@ -15,7 +15,6 @@ int main()
     {
         printf("\npath go:");
         resultData.print_path();
-
         resultData.printResult();
     }
     else

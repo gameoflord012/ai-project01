@@ -21,5 +21,10 @@ namespace algorithm
 	typedef unordered_set < StatePtr, StatePtr > UniqueSet;
 
 	bool SEARCH_API search(const shared_ptr<Board> board, SearchResultData& resultData);
-	bool read(shared_ptr<Board>& board, const char* filepath);
+	bool SEARCH_API read(shared_ptr<Board>& board, const char* filepath);
+}
+
+namespace global
+{
+	extern bool use_heuristic;
 }

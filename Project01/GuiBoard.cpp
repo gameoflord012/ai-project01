@@ -10,10 +10,13 @@ GuiBoard::GuiBoard(const shared_ptr<Board> board)
 
 GuiBoard::GuiBoard(const shared_ptr<Board> board, SearchResultData resultData)
 {
-	this->board = board;
+	this->board = make_shared<Board>(board->dim.x, board->dim.y, board->dim.z); // Should create a new board with same dimension
+	this->board->gridData = board->gridData; // Copy the board data
+
 	nRows = board->dim.x;
 	nCols = board->dim.y;
 	nFloors = board->dim.z;
+
 	this->resultData = resultData;
 	stateList = resultData.get_path();
 
@@ -34,31 +37,39 @@ void GuiBoard::drawUi(sf::RenderWindow& window)
 	// 3. Show log
 
 	// Change current state
-	if (ImGui::SliderInt("State", &stateListIterator, 0, stateList.size() - 1))
+	if (ImGui::SliderInt("State", &stateListIterator, 0, stateList.size()))
 	{
 		// IMO, this is safer than the button below
 		updateBoard();
 	}
 
-	if (stateListIterator < stateList.size())
+	if (ImGui::Button("To next State"))
 	{
-		// Check if reached end. Then not showing button
-		if (ImGui::Button("To next State"))
+		if (stateListIterator < stateList.size())
 		{
-			updateBoard();
+			// Check if reached end. Then not showing button
 			stateListIterator++;
+			updateBoard();
+
+		}
+	}
+	if (ImGui::Button("To previous State"))
+	{
+		if (stateListIterator > 0)
+		{
+			stateListIterator--;
+			updateBoard();
+
 		}
 	}
 
 	// Show current time
-	if (stateListIterator < stateList.size())
-	{
-		ImGui::Text("Time: %d", stateList[stateListIterator].time);
-	}
+	//if (stateListIterator < stateList.size())
+	//{
+		//ImGui::Text("Time: %d", stateList[stateListIterator].time);
+	//}
 
 	// Show log (WIP)
-
-
 
 	ImGui::End();
 	ImGui::SFML::Render(window);
@@ -116,13 +127,24 @@ void GuiBoard::drawBoard(sf::RenderWindow& window)
 
 void GuiBoard::updateBoard()
 {
+	// Copy the board from stateList because they doesn't change. Let default index be 0
+	for (int i = 0; i < stateList[0].board->gridData.size(); i++)
+	{
+		int tmp = stateList[0].board->gridData[i];
+		this->board->gridData[i] = tmp;
+	}
+	if (stateListIterator == 0)
+	{
+		return;
+	}
+
 	// This stores new agent position
 	vector<Position> newAgentPosList;
 	for (int i = 0; i < MAX_AGENT_COUNT; i++)
 	{
-		if (stateList[stateListIterator].agents[i].index != -1)
+		if (stateList[stateListIterator - 1].agents[i].index != -1)
 		{
-			newAgentPosList.push_back(stateList[stateListIterator].board->getPosition(stateList[stateListIterator].agents[i].index));
+			newAgentPosList.push_back(stateList[stateListIterator - 1].board->getPosition(stateList[stateListIterator-1].agents[i].index));
 		}
 	}
 
@@ -148,7 +170,7 @@ void GuiBoard::updateBoard()
 	// Set new agent positions
 	for (int i = 0; i < newAgentPosList.size(); i++)
 	{
-		char tmp = char('1' + i );
+		char tmp = char('1' + i);
 		char c[3] = { 'A', tmp , '\0' };
 		this->board->setBoardData(newAgentPosList[i], c);
 	}
@@ -238,7 +260,7 @@ int main()
 	SearchResultData resultData;
 	shared_ptr<Board> board;
 
-	algorithm::read(board, "../input/inp.txt");
+	algorithm::read(board, "../input/input2-level4.txt");
 	bool isSearchSuccess = algorithm::search(board, resultData);
 
 	NEW_PRINT_SECTION(RESULT)

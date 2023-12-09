@@ -21,10 +21,33 @@ const sf::Color customColor_1 = sf::Color(95, 35, 107); // Background
 const sf::Color customColor_2 = sf::Color(190, 55, 95); // Cell color
 const sf::Color customColor_3 = sf::Color(237, 133, 84); // Border color
 const sf::Color textColor_Stair = sf::Color(255, 212, 229); // Text color 1
-const sf::Color textColor_Agent = sf::Color(186, 255, 201); // Text color 2
-const sf::Color textColor_Key = sf::Color(241, 188, 255); // Text color 3
-const sf::Color textColor_Door = sf::Color(254, 255, 163); // Text color 4
 const sf::Color textColor_Wall = sf::Color(186, 255, 255); // Text color 5
+
+// list of colors for agent/target
+const sf::Color agent_target_ColorList[MAX_AGENT_COUNT] = {
+	sf::Color(255, 0, 0),
+	sf::Color(0, 255, 0),
+	sf::Color(0, 0, 255),
+	sf::Color(255, 255, 0),
+	sf::Color(255, 0, 255),
+	sf::Color(0, 255, 255),
+	sf::Color(255, 255, 255),
+	sf::Color(128, 0, 0),
+	sf::Color(0, 128, 0),
+};
+
+// list of colors for key/door
+const sf::Color key_door_ColorList[MAX_KEY_COUNT] = {
+	sf::Color(255, 0, 0),
+	sf::Color(0, 255, 0),
+	sf::Color(0, 0, 255),
+	sf::Color(255, 255, 0),
+	sf::Color(255, 0, 255),
+	sf::Color(0, 255, 255),
+	sf::Color(255, 255, 255),
+	sf::Color(128, 0, 0),
+	sf::Color(0, 128, 0),
+};
 
 using namespace std;
 
@@ -63,6 +86,13 @@ private:
 	sf::Font font;
 	sf::Clock dtClock;
 
+
 };
 
-void getBoardText(int value, sf::Text& text);
+// Helpers functions
+
+// Decrypt board value to text (Ex: 17 -> "A1")
+void getBoardText(int value, sf::Text& text); 
+
+// Generate heatmap, depicts the number of agents that have passed through each cell
+void generateHeatMap(const vector<SearchState>& stateList);

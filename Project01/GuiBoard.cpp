@@ -29,19 +29,37 @@ void GuiBoard::drawUi(sf::RenderWindow& window)
 	// Button says Next
 	ImGui::Begin("Toolbox");
 	// This toolbox shall do these tasks:
-	// - Change color (background, table)
+	// 1. Change current state
+	// 2. Show current time
+	// 3. Show log
+
+	// Change current state
+	if (ImGui::SliderInt("State", &stateListIterator, 0, stateList.size() - 1))
+	{
+		// IMO, this is safer than the button below
+		updateBoard();
+	}
 
 	if (stateListIterator < stateList.size())
 	{
 		// Check if reached end. Then not showing button
-		if (ImGui::Button("To the next state"))
+		if (ImGui::Button("To next State"))
 		{
-			// Update board to another board
-			this->board = stateList[stateListIterator].board;
-			//drawBoard(window);
+			updateBoard();
 			stateListIterator++;
 		}
 	}
+
+	// Show current time
+	if (stateListIterator < stateList.size())
+	{
+		ImGui::Text("Time: %d", stateList[stateListIterator].time);
+	}
+
+	// Show log (WIP)
+
+
+
 	ImGui::End();
 	ImGui::SFML::Render(window);
 }
@@ -49,11 +67,10 @@ void GuiBoard::drawUi(sf::RenderWindow& window)
 void GuiBoard::drawBoard(sf::RenderWindow& window)
 {
 	int cellSize = 100;
-
 	int textMargin = 10;
 	int cellMargin = 20;
 
-	// Get the number of board in a row.
+	// Get the max number of board in a row. This is used to arrange floors in square formation
 	int nGridWidth = ceil(sqrt(nFloors));
 
 	int gridRow = 0;
@@ -64,7 +81,7 @@ void GuiBoard::drawBoard(sf::RenderWindow& window)
 			gridRow++;
 		}
 
-		// Draw cells
+		// Draw cells, the cells will form a board (floor)
 		for (int i = 0; i < nRows; i++)
 		{
 			for (int j = 0; j < nCols; j++)
@@ -99,28 +116,67 @@ void GuiBoard::drawBoard(sf::RenderWindow& window)
 
 void GuiBoard::updateBoard()
 {
+	// This stores new agent position
+	vector<Position> newAgentPosList;
+	for (int i = 0; i < MAX_AGENT_COUNT; i++)
+	{
+		if (stateList[stateListIterator].agents[i].index != -1)
+		{
+			newAgentPosList.push_back(stateList[stateListIterator].board->getPosition(stateList[stateListIterator].agents[i].index));
+		}
+	}
+
+	// Clear all old agents positions
+	for (int k = 0; k < nFloors; k++)
+	{
+		for (int i = 0; i < nRows; i++)
+		{
+			for (int j = 0; j < nCols; j++)
+			{
+				// Get cell value
+				int value = this->board->getBoardValue(Position({ i, j, k }));
+
+				// Check if this cell is agent, delete it
+				if ((value & 0xF) == AGENT)
+				{
+					this->board->setBoardData(Position({ i, j, k }), "0");
+				}
+			}
+		}
+	}
+
+	// Set new agent positions
+	for (int i = 0; i < newAgentPosList.size(); i++)
+	{
+		char tmp = char('1' + i );
+		char c[3] = { 'A', tmp , '\0' };
+		this->board->setBoardData(newAgentPosList[i], c);
+	}
 }
 
 void GuiBoard::run()
 {
+	int windowWidth = 1920;
+	int windowHeight = 1080;
+
 	float dt;
 
 	sf::Event event;
 
-	sf::RenderWindow window(sf::VideoMode(1000, 800), "Project 01 - KAT GUI");
+	sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Project 01 - KAT GUI");
 	window.setFramerateLimit(60);
 	ImGui::SFML::Init(window);
 
 	float viewSpeed = 300.f;
-	sf::View view(sf::FloatRect(0, 0, 800, 600));
+	sf::View view(sf::FloatRect(0, 0, windowWidth, windowHeight));
 	view.setCenter(window.getSize().x / 2, window.getSize().y / 2);
+	window.setView(view);
 
 	font.loadFromFile("Resources/Fonts/Roboto/roboto_regular.ttf");
 
-	// Init board
-
 	while (window.isOpen())
 	{
+		// Delta Clock
 		dt = dtClock.restart().asSeconds();
 
 		while (window.pollEvent(event))
@@ -134,7 +190,6 @@ void GuiBoard::run()
 			}
 			case sf::Event::Resized:
 			{
-				window.setView(view);
 				view.setSize(event.size.width, event.size.height);
 				window.setView(view);
 				break;
@@ -144,7 +199,7 @@ void GuiBoard::run()
 
 		ImGui::SFML::Update(window, dtClock.restart());
 
-		// Update
+		// View movement with keyboard
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 		{
 			view.move(-viewSpeed * dt, 0);
@@ -200,7 +255,6 @@ int main()
 		}
 
 	GuiBoard guiBoard(board, resultData);
-
 	guiBoard.run();
 	return 0;
 }
@@ -241,25 +295,25 @@ void getBoardText(int value, sf::Text& text)
 	case AGENT:
 	{
 		text.setString("A" + to_string(p + 1));
-		text.setFillColor(textColor_Agent);
+		text.setFillColor(agent_target_ColorList[p]);
 		return;
 	}
 	case TARGET:
 	{
 		text.setString("T" + to_string(p + 1));
-		text.setFillColor(textColor_Agent);
+		text.setFillColor(agent_target_ColorList[p]);
 		return;
 	}
 	case KEY:
 	{
 		text.setString("K" + to_string(p + 1));
-		text.setFillColor(textColor_Key);
+		text.setFillColor(key_door_ColorList[p]);
 		return;
 	}
 	case DOOR:
 	{
 		text.setString("D" + to_string(p + 1));
-		text.setFillColor(textColor_Door);
+		text.setFillColor(key_door_ColorList[p]);
 		return;
 	}
 	default:
@@ -269,4 +323,8 @@ void getBoardText(int value, sf::Text& text)
 	}
 	}
 	return;
+}
+
+void generateHeatMap(const vector<SearchState>& stateList)
+{
 }

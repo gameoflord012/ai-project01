@@ -18,10 +18,10 @@
 #include "Helpers.h"
 
 const sf::Color customColor_1 = sf::Color(121, 121, 210); // Background
-const sf::Color customColor_2 = sf::Color(217, 217, 217); // Cell color
+const sf::Color customColor_2 = sf::Color(166, 211, 226); // Cell color
 const sf::Color customColor_3 = sf::Color(237, 133, 84); // Border color
 const sf::Color textColor_Stair = sf::Color(102, 0, 255); // Text color 1
-const sf::Color textColor_Wall = sf::Color(255, 204, 153); // Text color 5
+const sf::Color textColor_Wall = sf::Color(178, 178, 178); // Text color 5
 
 // list of colors for agent/target
 const sf::Color agent_target_ColorList[MAX_AGENT_COUNT] = {
@@ -84,6 +84,9 @@ private:
 
 	SearchResultData resultData;
 	vector<SearchState> stateList;
+
+	vector <int> visitedState;
+	vector<int> visitedLocation;
 
 
 	sf::RenderWindow window;

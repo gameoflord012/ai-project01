@@ -32,11 +32,11 @@ void GuiBoard::drawUi(sf::RenderWindow& window)
 	// Button says Next
 	ImGui::SetNextWindowPos(ImVec2(window.getSize().x - ImGui::GetWindowWidth(), 0), ImGuiCond_Always);
 	ImGui::Begin("Toolbox", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+
 	// This toolbox shall do these tasks:
 	// 1. Change current state
 	// 2. Show current time
 	// 3. Show log
-
 
 	// Change current state
 	if (ImGui::SliderInt("State", &stateListIterator, 0, stateList.size()))
@@ -45,7 +45,8 @@ void GuiBoard::drawUi(sf::RenderWindow& window)
 		updateBoard();
 	}
 
-	ImGui::Text("Solution found. Slide the bar to see agents location across states");
+	ImGui::Text("Solution found");
+	ImGui::Text("Slide the bar to see agents location across states");
 
 	if (ImGui::Button("To next State"))
 	{
@@ -64,14 +65,6 @@ void GuiBoard::drawUi(sf::RenderWindow& window)
 			updateBoard();
 		}
 	}
-
-	// Show current time
-	//if (stateListIterator < stateList.size())
-	//{
-		//ImGui::Text("Time: %d", stateList[stateListIterator].time);
-	//}
-
-	// Show log (WIP)
 
 	ImGui::End();
 	ImGui::SFML::Render(window);
@@ -105,7 +98,6 @@ void GuiBoard::drawBoard(sf::RenderWindow& window)
 				// Get cell value
 				int value = board->getBoardValue(Position({ i, j, k }));
 
-
 				// Draw cell
 				sf::RectangleShape cell(sf::Vector2f(cellSize, cellSize));
 				cell.setFillColor(customColor_2);
@@ -113,7 +105,7 @@ void GuiBoard::drawBoard(sf::RenderWindow& window)
 				{
 					cell.setFillColor(sf::Color(129, 129, 129));
 				}
-				
+
 				cell.setOutlineThickness(cellBorder);
 				cell.setOutlineColor(customColor_3);
 
@@ -143,6 +135,24 @@ void GuiBoard::updateBoard()
 	{
 		int tmp = stateList[0].board->gridData[i];
 		this->board->gridData[i] = tmp;
+		// Remove visited item, or pop item from visited list
+		for (int j = 0; j < visitedLocation.size(); j++)
+		{
+			if (visitedLocation[j] == i)
+			{
+				if (stateListIterator > visitedState[j])
+				{
+					this->board->gridData[i] = 0;
+					break;
+				}
+				else
+				{
+					visitedState.erase(visitedState.begin() + j);
+					visitedLocation.erase(visitedLocation.begin() + j);
+					break;
+				}
+			}
+		}
 	}
 	if (stateListIterator == 0)
 	{
@@ -181,6 +191,32 @@ void GuiBoard::updateBoard()
 	// Set new agent positions
 	for (int i = 0; i < newAgentPosList.size(); i++)
 	{
+		int value = this->board->getBoardValue(newAgentPosList[i]);
+		switch (value & 0xF)
+		{
+		case KEY:
+		{
+			visitedState.push_back(stateListIterator);
+			int gridIndex = this->board->getIndex(newAgentPosList[i]);
+			visitedLocation.push_back(gridIndex);
+			break;
+		}
+		case DOOR:
+		{
+			visitedState.push_back(stateListIterator);
+			int gridIndex = this->board->getIndex(newAgentPosList[i]);
+			visitedLocation.push_back(gridIndex);
+			break;
+		}
+		case TARGET:
+		{
+			visitedState.push_back(stateListIterator);
+			int gridIndex = this->board->getIndex(newAgentPosList[i]);
+			visitedLocation.push_back(gridIndex);
+			break;
+		}
+		}
+
 		char tmp = char('1' + i);
 		char c[3] = { 'A', tmp , '\0' };
 		this->board->setBoardData(newAgentPosList[i], c);

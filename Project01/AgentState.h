@@ -7,11 +7,11 @@
 
 struct AgentState
 {
-	int index = 0;
-	int keyMask = 0;
+	int index = 0; // 1d position in board
+	int keyMask = 0; // 1001 key 0 and key 3
 	int point = 0;
 
-	std::vector<int> desiredTargets;
+	std::vector<int> desiredTargets; // T2 D2 K2 - stack 
 
 	bool operator==(const AgentState& other) const;
 	unsigned int operator()(const AgentState& agents) const;

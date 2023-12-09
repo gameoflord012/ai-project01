@@ -3,11 +3,17 @@
 #include <vector>
 
 #include "SearchState.h"
+#include "Search.h"
 #include "Helpers.h"
 
 #ifndef MAIN_AGENT_SCALE
 #define MAIN_AGENT_SCALE 1000
 #endif // !MAIN_AGENT_SCALE
+
+#ifndef SUB_AGENT_SCALE
+#define SUB_AGENT_SCALE 1
+#endif // !SUB_AGENT_SCALE
+
 
 #ifndef MAX_AGENT_COUNT
 #define MAX_AGENT_COUNT 9
@@ -22,15 +28,20 @@ SearchState::SearchState(const shared_ptr<Board> board)
 
 float SearchState::get_heuristice_value()
 {
+    if (not global::use_heuristic)
+    {
+        return 1;
+    }
+
     float h_value = time;
 
     for (int i = 0; i < MAX_AGENT_COUNT; i++)
     {
-        float mod = i == 0 ? MAIN_AGENT_SCALE : 1;
+        float mod = i == 0 ? MAIN_AGENT_SCALE : SUB_AGENT_SCALE;
         h_value += agents[i].get_heuristic_value(*board) * mod;
     }
 
-    return h_value;
+    return h_value; // time + tong heuristic cua agents
 }
 
 unsigned int SearchState::operator()(const SearchState& searchState)

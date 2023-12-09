@@ -53,7 +53,7 @@ float AgentState::get_heuristic_value(const Board& board)
 
     h_value = h_distance - h_point * AGENT_POINT_MOD;
 
-    return h_value;
+    return h_value; // khoang cach cua agent toi cac desire_target
 }
 
 unsigned int AgentState::operator()(const AgentState& agents) const {

@@ -2,7 +2,9 @@
 
 GuiBoard::GuiBoard(const shared_ptr<Board> board)
 {
-	this->board = board;
+	this->board = make_shared<Board>(board->dim.x, board->dim.y, board->dim.z); // Should create a new board with same dimension
+	this->board->gridData = board->gridData;
+	
 	nRows = board->dim.x;
 	nCols = board->dim.y;
 	nFloors = board->dim.z;
@@ -23,48 +25,127 @@ GuiBoard::GuiBoard(const shared_ptr<Board> board, SearchResultData resultData)
 	stateListIterator = 0;
 }
 
-void GuiBoard::drawHeatMap(sf::RenderWindow& window)
-{
-}
-
 void GuiBoard::drawUi(sf::RenderWindow& window)
 {
 	// Button says Next
 	ImGui::SetNextWindowPos(ImVec2(window.getSize().x - ImGui::GetWindowWidth(), 0), ImGuiCond_Always);
 	ImGui::Begin("Toolbox", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
+
 	// This toolbox shall do these tasks:
 	// 1. Change current state
 	// 2. Show current time
 	// 3. Show log
 
-	// Change current state
-	if (ImGui::SliderInt("State", &stateListIterator, 0, stateList.size()))
+	if (isSearched)
 	{
-		// IMO, this is safer than the button below
-		updateBoard();
-	}
-
-	ImGui::Text("Solution found");
-	ImGui::Text("Slide the bar to see agents location across states");
-
-	if (ImGui::Button("To next State"))
-	{
-		if (stateListIterator < stateList.size())
+		if (isSolutionFound)
 		{
-			// Check if reached end. Then not showing button
-			stateListIterator++;
-			updateBoard();
+			// Change current state
+			if (ImGui::SliderInt("State", &stateListIterator, 0, stateList.size()))
+			{
+				// IMO, this is safer than the button below
+				updateBoard();
+			}
+
+			ImGui::Text("Solution found");
+			ImGui::Text("Slide the bar to change state");
+
+			if (ImGui::Button("To Next State"))
+			{
+				if (stateListIterator < stateList.size())
+				{
+					// Check if reached end. Then not showing button
+					stateListIterator++;
+					updateBoard();
+				}
+			}
+			if (ImGui::Button("To Previous State"))
+			{
+				if (stateListIterator > 0)
+				{
+					stateListIterator--;
+					updateBoard();
+				}
+			}
+
+			if (ImGui::Button("Generate Heatmap File"))
+			{
+				isHeatmapButtonClicked = true;
+				generateHeatMap();
+			}
+			if (isHeatmapButtonClicked)
+			{
+				ImGui::Text("Heatmap file generated");
+			}
+		}
+		else
+		{
+			ImGui::Text("No solution found");
 		}
 	}
-	if (ImGui::Button("To previous State"))
+	else
 	{
-		if (stateListIterator > 0)
+		// Mannn, I don't want to do this better
+		shared_ptr<Board> tmp_board = make_shared<Board>(this->board->dim.x, this->board->dim.y, this->board->dim.z);
+		tmp_board->gridData = this->board->gridData;
+
+		if (ImGui::Button("BCS/UCS Search"))
 		{
-			stateListIterator--;
-			updateBoard();
+
+			bool isSearchSuccess = algorithm::search(tmp_board, resultData);
+			algorithm::use_heuristic = false;
+
+			NEW_PRINT_SECTION(RESULT)
+				if (isSearchSuccess)
+				{
+					printf("\nPath go:");
+					resultData.print_path();
+
+					resultData.printResult();
+				}
+				else
+				{
+					printf("\nNo solution found");
+				}
+
+
+			isSearched = true;
+			isSolutionFound = isSearchSuccess;
+
+			stateList = resultData.get_path();
+			stateListIterator = 0;
+
 		}
+
+		if (ImGui::Button("A* Search"))
+		{
+			bool isSearchSuccess = algorithm::search(tmp_board, resultData);
+			algorithm::use_heuristic = true;
+
+			NEW_PRINT_SECTION(RESULT)
+				if (isSearchSuccess)
+				{
+					printf("\nPath go:");
+					resultData.print_path();
+
+					resultData.printResult();
+				}
+				else
+				{
+					printf("\nNo solution found");
+				}
+
+			isSearched = true;
+			isSolutionFound = isSearchSuccess;
+
+			stateList = resultData.get_path();
+			stateListIterator = 0;
+		}
+
+
 	}
+
 
 	ImGui::End();
 	ImGui::SFML::Render(window);
@@ -135,24 +216,25 @@ void GuiBoard::updateBoard()
 	{
 		int tmp = stateList[0].board->gridData[i];
 		this->board->gridData[i] = tmp;
+
 		// Remove visited item, or pop item from visited list
-		for (int j = 0; j < visitedLocation.size(); j++)
-		{
-			if (visitedLocation[j] == i)
-			{
-				if (stateListIterator > visitedState[j])
-				{
-					this->board->gridData[i] = 0;
-					break;
-				}
-				else
-				{
-					visitedState.erase(visitedState.begin() + j);
-					visitedLocation.erase(visitedLocation.begin() + j);
-					break;
-				}
-			}
-		}
+		// for (int j = 0; j < visitedLocation.size(); j++)
+		// {
+		// 	if (visitedLocation[j] == i)
+		// 	{
+		// 		if (stateListIterator > visitedState[j])
+		// 		{
+		// 			this->board->gridData[i] = 0;
+		// 			break;
+		// 		}
+		// 		else
+		// 		{
+		// 			visitedState.erase(visitedState.begin() + j);
+		// 			visitedLocation.erase(visitedLocation.begin() + j);
+		// 			break;
+		// 		}
+		// 	}
+		// }
 	}
 	if (stateListIterator == 0)
 	{
@@ -191,36 +273,89 @@ void GuiBoard::updateBoard()
 	// Set new agent positions
 	for (int i = 0; i < newAgentPosList.size(); i++)
 	{
-		int value = this->board->getBoardValue(newAgentPosList[i]);
-		switch (value & 0xF)
-		{
-		case KEY:
-		{
-			visitedState.push_back(stateListIterator);
-			int gridIndex = this->board->getIndex(newAgentPosList[i]);
-			visitedLocation.push_back(gridIndex);
-			break;
-		}
-		case DOOR:
-		{
-			visitedState.push_back(stateListIterator);
-			int gridIndex = this->board->getIndex(newAgentPosList[i]);
-			visitedLocation.push_back(gridIndex);
-			break;
-		}
-		case TARGET:
-		{
-			visitedState.push_back(stateListIterator);
-			int gridIndex = this->board->getIndex(newAgentPosList[i]);
-			visitedLocation.push_back(gridIndex);
-			break;
-		}
-		}
+		// int value = this->board->getBoardValue(newAgentPosList[i]);
+		// switch (value & 0xF)
+		// {
+		// case KEY:
+		// {
+		// 	visitedState.push_back(stateListIterator);
+		// 	int gridIndex = this->board->getIndex(newAgentPosList[i]);
+		// 	visitedLocation.push_back(gridIndex);
+		// 	break;
+		// }
+		// case DOOR:
+		// {
+		// 	visitedState.push_back(stateListIterator);
+		// 	int gridIndex = this->board->getIndex(newAgentPosList[i]);
+		// 	visitedLocation.push_back(gridIndex);
+		// 	break;
+		// }
+		// case TARGET:
+		// {
+		// 	visitedState.push_back(stateListIterator);
+		// 	int gridIndex = this->board->getIndex(newAgentPosList[i]);
+		// 	visitedLocation.push_back(gridIndex);
+		// 	break;
+		// }
+		// }
 
 		char tmp = char('1' + i);
 		char c[3] = { 'A', tmp , '\0' };
 		this->board->setBoardData(newAgentPosList[i], c);
 	}
+}
+
+void GuiBoard::generateHeatMap()
+{
+	vector<int> heatMap = board->gridData;
+	for (auto state : stateList)
+	{
+		for (int i = 0; i < MAX_AGENT_COUNT; i++)
+		{
+			if (state.agents[i].index != -1)
+			{
+				heatMap[state.agents[i].index]++;
+			}
+		}
+	}
+
+	// Write to file
+	FILE* outputFile;
+	if (fopen_s(&outputFile, "./heatmap.txt", "w") != 0)
+	{
+		printf("Cannot open file");
+		return;
+	}
+
+	fprintf(outputFile, "%d, %d\n", nRows, nCols);
+	for (int k = 0; k < nFloors; k++)
+	{
+		fprintf(outputFile, "[Floor%d]\n", k + 1);
+		for (int i = 0; i < nRows; i++)
+		{
+			for (int j = 0; j < nCols; j++)
+			{
+				int value = heatMap[board->getIndex(Position({ i, j, k }))];
+
+				if (value > 0)
+				{
+					fprintf(outputFile, "%d", value);
+				}
+				else
+				{
+					fprintf(outputFile, "0");
+				}
+				if (j != nCols - 1)
+				{
+					fprintf(outputFile, ",");
+				}
+			}
+			fprintf(outputFile, "\n");
+		}
+		fprintf(outputFile, "\n");
+	}
+
+	fclose(outputFile);
 }
 
 void GuiBoard::run()
@@ -264,6 +399,20 @@ void GuiBoard::run()
 				window.setView(view);
 				break;
 			}
+			case sf::Event::MouseWheelScrolled:
+			{
+				if (event.mouseWheelScroll.delta < 0)
+				{
+					view.zoom(zoomView + 0.05f * event.mouseWheelScroll.delta);
+					window.setView(view);
+				}
+				else if (event.mouseWheelScroll.delta > 0)
+				{
+					view.zoom(zoomView + 0.05f * event.mouseWheelScroll.delta);
+					window.setView(view);
+				}
+				break;
+			}
 			}
 		}
 
@@ -305,33 +454,24 @@ void GuiBoard::run()
 
 int main()
 {
-	SearchResultData resultData;
 	shared_ptr<Board> board;
+
+	// CLI ask user for input file
+	char inputFilePath[100] = "../input/input1-level3.txt";
+
+	//char inputFilePath[100];
+	 //printf("Input file path: ");
+	 //scanf_s("%s", inputFilePath, sizeof(inputFilePath));
+
 
 	try
 	{
-		if (algorithm::read(board, "../input/input1-level3.txt") == false)
+		if (algorithm::read(board, inputFilePath) == false)
 		{
 			throw "Cannot read file";
 		}
 
-		algorithm::use_heuristic = true;
-		bool isSearchSuccess = algorithm::search(board, resultData);
-
-		NEW_PRINT_SECTION(RESULT)
-			if (isSearchSuccess)
-			{
-				printf("\nPath go:");
-				resultData.print_path();
-
-				resultData.printResult();
-			}
-			else
-			{
-				printf("\nNo solution found");
-			}
-
-		GuiBoard guiBoard(board, resultData);
+		GuiBoard guiBoard(board);
 		guiBoard.run();
 	}
 	catch (const char* msg)
@@ -405,8 +545,4 @@ void getBoardText(int value, sf::Text& text)
 	}
 	}
 	return;
-}
-
-void generateHeatMap(const vector<SearchState>& stateList)
-{
 }

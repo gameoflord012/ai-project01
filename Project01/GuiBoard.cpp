@@ -307,7 +307,7 @@ void GuiBoard::updateBoard()
 
 void GuiBoard::generateHeatMap()
 {
-	vector<int> heatMap = board->gridData;
+	vector<int> heatMap = vector<int>(board->gridData.size(), 0);
 	for (auto state : stateList)
 	{
 		for (int i = 0; i < MAX_AGENT_COUNT; i++)

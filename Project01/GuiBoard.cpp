@@ -451,7 +451,7 @@ int main()
 	shared_ptr<Board> board;
 
 	// CLI ask user for input file
-	char inputFilePath[100] = "../input/input5-level2.txt";
+	char inputFilePath[100] = "../input/input3-level3.txt";
 
 	//char inputFilePath[100];
 	 //printf("Input file path: ");
@@ -464,12 +464,22 @@ int main()
 			throw "Cannot read file";
 		}
 
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "\nError in reading file!" << e.what() << std::endl;
+		std::cerr << "Caught exception: " << e.what() << std::endl;
+	}
+
+	try
+	{
 		GuiBoard guiBoard(board);
 		guiBoard.run();
 	}
-	catch (const char* msg)
+	catch (const std::exception& e)
 	{
-		printf("\n%s", msg);
+		std::cerr << "\nError in running GUI!" << e.what() << std::endl;
+		std::cerr << "Caught exception: " << e.what() << std::endl;
 	}
 	return 0;
 }

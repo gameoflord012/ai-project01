@@ -402,8 +402,8 @@ SFML-2.6.1-windows-vc16-64-bit/
 SFML-2.6.1-windows-vc16-32-bit/
 imgui-sfml-2.6/
 
-# IMGUI
-imgui-1.90/
+# # IMGUI
+# imgui-1.90/
 
 # GLFW
 glfw-3.3.8.bin.WIN64/

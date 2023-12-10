@@ -168,7 +168,6 @@
     <ClCompile Include="Position.cpp" />
     <ClCompile Include="Search.cpp" />
     <ClCompile Include="SearchState.cpp" />
-    <ClCompile Include="SmartPtr.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AgentState.h" />

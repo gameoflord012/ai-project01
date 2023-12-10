@@ -51,12 +51,15 @@ def truncate_map(boardMap):
 heatMap = read_board(heat_path)
 heatMap = truncate_map(heatMap)
 
+
 for i in range(len(heatMap)):
-    tmp = np.array(heatMap[i]).astype(float)
-    graph = sns.heatmap(tmp, annot=True, fmt='.2f', cmap='Blues')
+    tmp = np.array(heatMap[i]).astype(int)
+    fig, ax = plt.subplots(figsize=(20,20)) 
+    graph = sns.heatmap(tmp, annot=True, cmap='Blues')
     graph.set_title('Heatmap of floor {}'.format(i+1))
     plt.close()
 
     # Export to png
     fig = graph.get_figure()
     fig.savefig('heatmap_floor{}.png'.format(i+1))
+    print('Heatmap of floor {} is exported to heatmap_floor{}.png'.format(i+1, i+1))

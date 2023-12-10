@@ -67,6 +67,7 @@ public:
 
 	void generateHeatMap();
 
+	void truncateBoard();
 
 	void run();
 
@@ -95,7 +96,6 @@ private:
 	int score = 0;
 
 	bool isHeatmapButtonClicked = false;
-
 
 	SearchResultData resultData;
 	vector<SearchState> stateList;

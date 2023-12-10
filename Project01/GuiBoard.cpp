@@ -5,9 +5,36 @@ GuiBoard::GuiBoard(const shared_ptr<Board> board)
 	this->board = make_shared<Board>(board->dim.x, board->dim.y, board->dim.z); // Should create a new board with same dimension
 	this->board->gridData = board->gridData;
 
+
+
 	nRows = board->dim.x;
 	nCols = board->dim.y;
 	nFloors = board->dim.z;
+
+	truncateBoard();
+}
+
+void GuiBoard::truncateBoard()
+{
+	int floor_cut = 0;
+	for (int k = 0; k < nFloors; k++)
+	{
+		int checksum = 0;
+		for (int i = 0; i < nRows; i++)
+		{
+			for (int j = 0; j < nCols; j++)
+			{
+				int value = board->getBoardValue(Position({ i, j, k }));
+				checksum += value;
+			}
+		}
+		if (checksum < 0)
+		{
+			floor_cut = k;
+			break;
+		}
+	}
+	nFloors = floor_cut;
 }
 
 GuiBoard::GuiBoard(const shared_ptr<Board> board, SearchResultData resultData)
@@ -28,8 +55,8 @@ GuiBoard::GuiBoard(const shared_ptr<Board> board, SearchResultData resultData)
 void GuiBoard::drawUi(sf::RenderWindow& window)
 {
 	// Button says Next
-	ImGui::SetNextWindowPos(ImVec2(window.getSize().x - ImGui::GetWindowWidth(), 0), ImGuiCond_Always);
-	ImGui::Begin("Toolbox", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+	ImGui::SetNextWindowPos(ImVec2(window.getSize().x - ImGui::GetWindowWidth(), 0));
+	ImGui::Begin("Toolbox", nullptr);
 	ImGui::Text("Scroll to zoom");
 	ImGui::Text("Use arrow keys to move");
 
@@ -375,7 +402,7 @@ void GuiBoard::generateHeatMap()
 	}
 
 	fprintf(outputFile, "%d, %d\n", nRows, nCols);
-	for (int k = 0; k < nFloors; k++)
+	for (int k = 0; k < MAX_BOARD_HEIGHT; k++)
 	{
 		fprintf(outputFile, "[floor%d]\n", k + 1);
 		for (int i = 0; i < nRows; i++)
@@ -405,7 +432,7 @@ void GuiBoard::generateHeatMap()
 		}
 		// fprintf(outputFile, "\n");
 	}
-	printf("Heatmap file generated");
+	printf("\nHeatmap generated\n");
 
 	fclose(outputFile);
 	if (drawHeatMap())
@@ -414,7 +441,7 @@ void GuiBoard::generateHeatMap()
 	}
 	else
 	{
-		printf("Heatmap exported");
+		printf("\nHeatmap exported");
 	}
 }
 

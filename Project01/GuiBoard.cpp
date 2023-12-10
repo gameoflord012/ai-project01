@@ -315,6 +315,7 @@ int main()
 			throw "Cannot read file";
 		}
 
+		algorithm::use_heuristic = true;
 		bool isSearchSuccess = algorithm::search(board, resultData);
 
 		NEW_PRINT_SECTION(RESULT)

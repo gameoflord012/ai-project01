@@ -22,9 +22,6 @@ namespace algorithm
 
 	bool SEARCH_API search(const shared_ptr<Board> board, SearchResultData& resultData);
 	bool SEARCH_API read(shared_ptr<Board>& board, const char* filepath);
-}
 
-namespace global
-{
 	extern bool use_heuristic;
 }

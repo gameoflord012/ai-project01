@@ -29,9 +29,9 @@ SearchState::SearchState(const shared_ptr<Board> board)
 
 float SearchState::get_heuristice_value()
 {
-    if (not global::use_heuristic)
+    if (not algorithm::use_heuristic)
     {
-        return 1;
+        return time + 1;
     }
 
     float h_value = time;

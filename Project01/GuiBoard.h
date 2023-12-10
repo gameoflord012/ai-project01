@@ -72,6 +72,8 @@ public:
 	bool isSolutionFound = false;
 	bool isSearched = false;
 
+	// To flash the text (WIP)
+	bool isTextVisible = false;
 
 private:
 	shared_ptr<Board> board;

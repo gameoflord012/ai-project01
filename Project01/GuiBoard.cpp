@@ -4,7 +4,7 @@ GuiBoard::GuiBoard(const shared_ptr<Board> board)
 {
 	this->board = make_shared<Board>(board->dim.x, board->dim.y, board->dim.z); // Should create a new board with same dimension
 	this->board->gridData = board->gridData;
-	
+
 	nRows = board->dim.x;
 	nCols = board->dim.y;
 	nFloors = board->dim.z;
@@ -30,7 +30,6 @@ void GuiBoard::drawUi(sf::RenderWindow& window)
 	// Button says Next
 	ImGui::SetNextWindowPos(ImVec2(window.getSize().x - ImGui::GetWindowWidth(), 0), ImGuiCond_Always);
 	ImGui::Begin("Toolbox", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
-
 
 	// This toolbox shall do these tasks:
 	// 1. Change current state
@@ -92,7 +91,6 @@ void GuiBoard::drawUi(sf::RenderWindow& window)
 
 		if (ImGui::Button("BCS/UCS Search"))
 		{
-
 			bool isSearchSuccess = algorithm::search(tmp_board, resultData);
 			algorithm::use_heuristic = false;
 
@@ -109,13 +107,11 @@ void GuiBoard::drawUi(sf::RenderWindow& window)
 					printf("\nNo solution found");
 				}
 
-
 			isSearched = true;
 			isSolutionFound = isSearchSuccess;
 
 			stateList = resultData.get_path();
 			stateListIterator = 0;
-
 		}
 
 		if (ImGui::Button("A* Search"))
@@ -142,10 +138,7 @@ void GuiBoard::drawUi(sf::RenderWindow& window)
 			stateList = resultData.get_path();
 			stateListIterator = 0;
 		}
-
-
 	}
-
 
 	ImGui::End();
 	ImGui::SFML::Render(window);
@@ -156,12 +149,13 @@ void GuiBoard::drawBoard(sf::RenderWindow& window)
 	// Get the max number of board in a row. This is used to arrange floors in square formation
 	int nGridWidth = ceil(sqrt(nFloors));
 
-	mapSize = min(window.getSize().x, window.getSize().y) / nGridWidth;
-	cellSize = mapSize / max(nRows, nCols);
-	textSize = cellSize / 2;
-	cellMargin = cellSize / 2;
-	textMargin = cellSize / 10;
-	cellBorder = cellSize / 20;
+	// This dynamic thing is not working for big text size
+	// mapSize = min(window.getView().getSize().x, window.getView().getSize().y) / nGridWidth;
+	// cellSize = mapSize / max(nRows, nCols);
+	// textSize = cellSize / 2;
+	// cellMargin = cellSize / 2;
+	// textMargin = cellSize / 10;
+	// cellBorder = cellSize / 20;
 
 	int gridRow = 0;
 	for (int k = 0; k < nFloors; k++)
@@ -401,12 +395,12 @@ void GuiBoard::run()
 			}
 			case sf::Event::MouseWheelScrolled:
 			{
-				if (event.mouseWheelScroll.delta < 0)
+				if (event.mouseWheelScroll.delta > 0)
 				{
 					view.zoom(zoomView + 0.05f * event.mouseWheelScroll.delta);
 					window.setView(view);
 				}
-				else if (event.mouseWheelScroll.delta > 0)
+				else if (event.mouseWheelScroll.delta < 0)
 				{
 					view.zoom(zoomView + 0.05f * event.mouseWheelScroll.delta);
 					window.setView(view);
@@ -457,12 +451,11 @@ int main()
 	shared_ptr<Board> board;
 
 	// CLI ask user for input file
-	char inputFilePath[100] = "../input/input1-level3.txt";
+	char inputFilePath[100] = "../input/input5-level2.txt";
 
 	//char inputFilePath[100];
 	 //printf("Input file path: ");
 	 //scanf_s("%s", inputFilePath, sizeof(inputFilePath));
-
 
 	try
 	{

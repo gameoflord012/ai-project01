@@ -57,14 +57,23 @@ class GuiBoard
 public:
 	GuiBoard(const shared_ptr<Board> board);
 	GuiBoard(const shared_ptr<Board> board, SearchResultData resultData);
-	
+
 	void drawBoard(sf::RenderWindow& window);
 	void drawHeatMap(sf::RenderWindow& window);
 	void drawUi(sf::RenderWindow& window);
 
 	void updateBoard();
 
+	void generateHeatMap();
+
+
 	void run();
+
+	bool isSolutionFound = false;
+	bool isSearched = false;
+
+	// To flash the text (WIP)
+	bool isTextVisible = false;
 
 private:
 	shared_ptr<Board> board;
@@ -73,7 +82,7 @@ private:
 	int nRows;
 	int nCols;
 	int nFloors;
-	int stateListIterator; // This is integer because I dont want to use pointer	
+	int stateListIterator; // This is integer because I dont want to use pointer
 
 	int mapSize; // Map holds board that holds cells
 	int textSize = 20;
@@ -82,12 +91,14 @@ private:
 	int cellMargin = 20;
 	int cellBorder = 5;
 
+	bool isHeatmapButtonClicked = false;
+
+
 	SearchResultData resultData;
 	vector<SearchState> stateList;
 
-	vector <int> visitedState;
-	vector<int> visitedLocation;
-
+	//vector <int> visitedState;
+	//vector<int> visitedLocation;
 
 	sf::RenderWindow window;
 	sf::Sprite map_sprite;
@@ -95,14 +106,11 @@ private:
 	sf::Texture map_texture;
 	sf::Font font;
 	sf::Clock dtClock;
-
-
 };
 
 // Helpers functions
 
 // Decrypt board value to text (Ex: 17 -> "A1")
-void getBoardText(int value, sf::Text& text); 
+void getBoardText(int value, sf::Text& text);
 
 // Generate heatmap, depicts the number of agents that have passed through each cell
-void generateHeatMap(const vector<SearchState>& stateList);

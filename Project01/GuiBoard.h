@@ -9,6 +9,7 @@
 #include "imgui.h"
 #include "imgui-SFML.h"
 
+#include <cstdlib>
 #include "Config.h"
 #include "Position.h"
 #include "Board.h"
@@ -59,7 +60,7 @@ public:
 	GuiBoard(const shared_ptr<Board> board, SearchResultData resultData);
 
 	void drawBoard(sf::RenderWindow& window);
-	void drawHeatMap(sf::RenderWindow& window);
+	int drawHeatMap(sf::RenderWindow& window);
 	void drawUi(sf::RenderWindow& window);
 
 	void updateBoard();
@@ -87,7 +88,7 @@ private:
 	int mapSize; // Map holds board that holds cells
 	int textSize = 20;
 	int cellSize = 100;
-	int textMargin = 10;
+	int textMargin = cellSize / 3;
 	int cellMargin = 20;
 	int cellBorder = 5;
 

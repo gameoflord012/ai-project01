@@ -157,6 +157,8 @@ void GuiBoard::drawBoard(sf::RenderWindow& window)
 	// textMargin = cellSize / 10;
 	// cellBorder = cellSize / 20;
 
+	int indexNo = 0;
+
 	int gridRow = 0;
 	for (int k = 0; k < nFloors; k++)
 	{
@@ -198,8 +200,38 @@ void GuiBoard::drawBoard(sf::RenderWindow& window)
 				text.setPosition(pos_x + textMargin, pos_y + textMargin);
 				getBoardText(value, text);
 				window.draw(text);
+
+				// Draw index
+				string indexText = to_string(indexNo);
+
+				sf::Text index;
+				index.setFont(font);
+				index.setCharacterSize(15);
+				index.setFillColor(sf::Color(23,23,23));
+				index.setStyle(sf::Text::Bold);
+				index.setPosition(pos_x, pos_y);
+				index.setString(indexText);
+				window.draw(index);
+				indexNo++;
 			}
 		}
+	}
+}
+
+int GuiBoard::drawHeatMap(sf::RenderWindow& window)
+{
+	const char* pythonScript = "heatmap.py";
+	std::string command = "python " + std::string(pythonScript);
+	int result = system(command.c_str());
+
+	// Check the result of the command execution
+	if (result == 0) {
+		// Command executed successfully
+		return 0;
+	}
+	else {
+		// An error occurred
+		return 1;
 	}
 }
 

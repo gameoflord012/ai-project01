@@ -1,6 +1,7 @@
 #include "Config.h"
 
 #include <vector>
+#include <assert.h>
 
 #include "SearchState.h"
 #include "Search.h"
@@ -27,16 +28,16 @@ SearchState::SearchState(const shared_ptr<Board> board)
     parent.reset();
 }
 
-float SearchState::get_heuristice_value()
+float SearchState::get_heuristice_value() const
 {
-    if (not global::use_heuristic)
+    if (not algorithm::use_heuristic)
     {
-        return 1;
+        return time + 1;
     }
 
     float h_value = time;
 
-    for (int i = 0; i < MAX_AGENT_COUNT; i++)
+    for (int i = 0; i < MAX_AGENT_COUNT; i++) if(agents[i].index != -1)
     {
         float mod = i == 0 ? MAIN_AGENT_SCALE : SUB_AGENT_SCALE;
         h_value += agents[i].get_heuristic_value(*board) * mod;
@@ -45,21 +46,9 @@ float SearchState::get_heuristice_value()
     return h_value; // time + tong heuristic cua agents
 }
 
-unsigned int SearchState::operator()(const SearchState& searchState)
-{
-    unsigned int hashValue = 0;
-
-    for (int i = 0; i < MAX_AGENT_COUNT; i++)
-    {
-        hash_combine(hashValue, searchState.agents[i]);
-    }
-
-    return hashValue;
-}
-
 bool SearchState::operator()(const SearchState& a, const SearchState& b) const
 {
-    return a.time > b.time;
+    return a.get_heuristice_value() > b.get_heuristice_value();
 }
 
 void SearchState::print_state(bool exclude_unchanged_state) const
@@ -67,7 +56,7 @@ void SearchState::print_state(bool exclude_unchanged_state) const
     for (int i = 0; i < MAX_AGENT_COUNT; i++) if (agents[i].index != -1)
     {
         Position p = board->getPosition(agents[i].index);
-        printf("\n\033[1;%dm[A%1d] || Tid=%2d || Floor=%2d || POS=2%d 2%d || time=%2d\033[0m", 
+        printf("\n\033[1;%dm[A%1d] || Tid=%2d || Floor=%2d || POS=%2d %2d || time=%2d\033[0m", 
             40 + i, i, 
             agents[i].desiredTargets.size() > 0 ? agents[i].desiredTargets[0] : -1, 
             p.z, p.x, p.y, 
@@ -79,7 +68,7 @@ void SearchState::print_state(bool exclude_unchanged_state) const
     printf("\n==================================================");
 }
 
-void SearchState::trace_state(std::vector<SearchState>& result, shared_ptr<SearchState> statePtr)
+void SearchState::trace_state(std::vector<SearchState>& result, const shared_ptr<SearchState>& statePtr)
 {
     if (not statePtr->parent.expired())
         trace_state(result, statePtr->parent.lock());
@@ -91,7 +80,7 @@ void SearchState::trace_state(std::vector<SearchState>& result, shared_ptr<Searc
 
 bool SearchState::operator==(const SearchState& other) const
 {
-    for (int i = 0; i < MAX_AGENT_COUNT; i++)
+    for (int i = 0; i < MAX_AGENT_COUNT; i++) if(agents[i].index != -1)
     {
         if (not(agents[i] == other.agents[i]))
         {
@@ -105,6 +94,20 @@ bool SearchState::operator==(const SearchState& other) const
     }
 
     return true;
+}
+
+unsigned int SearchState::operator()(const SearchState& searchState) const
+{
+    unsigned int hashValue = 0;
+
+    for (int i = 0; i < MAX_AGENT_COUNT; i++) if (agents[i].index != -1)
+    {
+        hash_combine(hashValue, searchState.agents[i]);
+    }
+
+    hash_combine(hashValue, time % MAX_AGENT_COUNT);
+
+    return hashValue;
 }
 
 vector<SearchState> SearchResultData::get_path(bool exclude_unchanged_state)

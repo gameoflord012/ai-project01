@@ -30,14 +30,14 @@ SEARCH_API struct SearchState
     weak_ptr<SearchState> parent;
     shared_ptr<Board> board;
 
-    float get_heuristice_value();
+    float get_heuristice_value() const;
 
-    unsigned int operator()(const SearchState& searchState);
+    unsigned int operator()(const SearchState& searchState) const;
     bool operator==(const SearchState& other) const;
     bool operator()(const SearchState& a, const SearchState& b) const; // State Comparator
 
     void print_state(bool exclude_unchanged_state = false) const;
-    void trace_state(std::vector<SearchState>& result, shared_ptr<SearchState> statePtr);
+    void trace_state(std::vector<SearchState>& result, const shared_ptr<SearchState>& statePtr);
 };
 
 typedef SmartPtr<SearchState> StatePtr;

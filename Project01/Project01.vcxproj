@@ -86,12 +86,15 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>EXPORT</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>./include/imgui/imgui-1.90;./include/imgui/imgui-1.90/backends;./include/sfml/imgui-sfml-2.6;./include/glfw/glfw-3.3.8.bin.WIN32/include;..\include\sfml\SFML-2.6.1-windows-vc16-32-bit\SFML-2.6.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>./include/glfw/glfw-3.3.8.bin.WIN32/lib-vc2019;./include/sfml/SFML-2.6.1-windows-vc16-32-bit/SFML-2.6.1/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;glfw3_mt.lib;glfw3dll.lib;sfml-graphics-d.lib;sfml-system-d.lib;sfml-window-d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -102,12 +105,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>EXPORT</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>./include/imgui/imgui-1.90;./include/imgui/imgui-1.90/backends;./include/sfml/imgui-sfml-2.6;./include/glfw/glfw-3.3.8.bin.WIN32/include;..\include\sfml\SFML-2.6.1-windows-vc16-32-bit\SFML-2.6.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>./include/glfw/glfw-3.3.8.bin.WIN32/lib-vc2019;./include/sfml/SFML-2.6.1-windows-vc16-32-bit/SFML-2.6.1/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;glfw3_mt.lib;glfw3dll.lib;sfml-graphics.lib;sfml-system.lib;sfml-window.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -116,10 +122,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>EXPORT</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>./include/imgui/imgui-1.90;./include/imgui/imgui-1.90/backends;./include/sfml/imgui-sfml-2.6;./include/glfw/glfw-3.3.8.bin.WIN64/include;./include/sfml/SFML-2.6.1-windows-vc16-64-bit/SFML-2.6.1/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>./include/glfw/glfw-3.3.8.bin.WIN64/lib-vc2019;.\include\sfml\SFML-2.6.1-windows-vc16-64-bit\SFML-2.6.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;glfw3_mt.lib;glfw3dll.lib;sfml-graphics-d.lib;sfml-system-d.lib;sfml-window-d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -130,34 +139,61 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>EXPORT</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>./include/imgui/imgui-1.90;./include/imgui/imgui-1.90/backends;./include/sfml/imgui-sfml-2.6;./include/glfw/glfw-3.3.8.bin.WIN64/include;./include/sfml/SFML-2.6.1-windows-vc16-64-bit/SFML-2.6.1/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>./include/glfw/glfw-3.3.8.bin.WIN64/lib-vc2019;./include/sfml/SFML-2.6.1-windows-vc16-64-bit/SFML-2.6.1/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;glfw3_mt.lib;glfw3dll.lib;sfml-graphics.lib;sfml-system.lib;sfml-window.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AgentState.cpp" />
     <ClCompile Include="Board.cpp" />
-    <ClCompile Include="helper.cpp" />
+    <ClCompile Include="GuiBoard.cpp" />
+    <ClCompile Include="GuiBoard.h" />
+    <ClCompile Include="heatmap.c" />
+    <ClCompile Include="include\imgui\imgui-1.90\backends\imgui_impl_glfw.cpp" />
+    <ClCompile Include="include\imgui\imgui-1.90\backends\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="include\imgui\imgui-1.90\imgui.cpp" />
+    <ClCompile Include="include\imgui\imgui-1.90\imgui_demo.cpp" />
+    <ClCompile Include="include\imgui\imgui-1.90\imgui_draw.cpp" />
+    <ClCompile Include="include\imgui\imgui-1.90\imgui_tables.cpp" />
+    <ClCompile Include="include\imgui\imgui-1.90\imgui_widgets.cpp" />
+    <ClCompile Include="include\sfml\imgui-sfml-2.6\imgui-SFML.cpp" />
+    <ClCompile Include="Helper.cpp" />
     <ClCompile Include="Position.cpp" />
-    <ClCompile Include="Project01.cpp" />
     <ClCompile Include="Search.cpp" />
     <ClCompile Include="SearchState.cpp" />
-    <ClCompile Include="SmartPtr.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AgentState.h" />
     <ClInclude Include="Board.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="HashUtils.h" />
+    <ClInclude Include="heatmap.h" />
     <ClInclude Include="Helpers.h" />
+    <ClInclude Include="include\imgui\imgui-1.90\backends\imgui_impl_glfw.h" />
+    <ClInclude Include="include\imgui\imgui-1.90\backends\imgui_impl_opengl3.h" />
+    <ClInclude Include="include\imgui\imgui-1.90\imconfig.h" />
+    <ClInclude Include="include\imgui\imgui-1.90\imgui.h" />
+    <ClInclude Include="include\imgui\imgui-1.90\imgui_internal.h" />
+    <ClInclude Include="include\imgui\imgui-1.90\imstb_rectpack.h" />
+    <ClInclude Include="include\imgui\imgui-1.90\imstb_textedit.h" />
+    <ClInclude Include="include\imgui\imgui-1.90\imstb_truetype.h" />
+    <ClInclude Include="include\sfml\imgui-sfml-2.6\imgui-SFML.h" />
+    <ClInclude Include="include\sfml\imgui-sfml-2.6\imgui-SFML_export.h" />
     <ClInclude Include="Position.h" />
     <ClInclude Include="Search.h" />
     <ClInclude Include="SearchState.h" />
     <ClInclude Include="SmartPtr.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\input\inp.txt" />
+    <Text Include="..\input\inp2.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

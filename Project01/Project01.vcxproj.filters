@@ -13,24 +13,63 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="imgui">
+      <UniqueIdentifier>{4d7cf42c-26b5-4e8a-838a-864c28acf1f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="imgui\backend">
+      <UniqueIdentifier>{24ec41f0-fcdb-4673-8e9f-563454a1b672}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI_KAT">
+      <UniqueIdentifier>{f6017a9d-4433-4d5e-a1dc-a273bcfece07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="imgui\sfml">
+      <UniqueIdentifier>{d7a6a89a-0552-4c27-a17f-dc71f9b03d9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libheatmap">
+      <UniqueIdentifier>{23c039ea-0677-4575-b105-c90625cd3cb9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Project01.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SearchState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AgentState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SmartPtr.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Board.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="helper.cpp">
+    <ClCompile Include="GuiBoard.h">
+      <Filter>GUI_KAT</Filter>
+    </ClCompile>
+    <ClCompile Include="GuiBoard.cpp">
+      <Filter>GUI_KAT</Filter>
+    </ClCompile>
+    <ClCompile Include="include\imgui\imgui-1.90\backends\imgui_impl_opengl3.cpp">
+      <Filter>imgui\backend</Filter>
+    </ClCompile>
+    <ClCompile Include="include\imgui\imgui-1.90\backends\imgui_impl_glfw.cpp">
+      <Filter>imgui\backend</Filter>
+    </ClCompile>
+    <ClCompile Include="include\imgui\imgui-1.90\imgui.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="include\imgui\imgui-1.90\imgui_demo.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="include\imgui\imgui-1.90\imgui_draw.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="include\imgui\imgui-1.90\imgui_tables.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="include\imgui\imgui-1.90\imgui_widgets.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="include\sfml\imgui-sfml-2.6\imgui-SFML.cpp">
+      <Filter>imgui\sfml</Filter>
+    </ClCompile>
+    <ClCompile Include="Helper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Position.cpp">
@@ -38,6 +77,9 @@
     </ClCompile>
     <ClCompile Include="Search.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="heatmap.c">
+      <Filter>libheatmap</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -65,6 +107,47 @@
     <ClInclude Include="SmartPtr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\imgui\imgui-1.90\backends\imgui_impl_opengl3.h">
+      <Filter>imgui\backend</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui\imgui-1.90\backends\imgui_impl_glfw.h">
+      <Filter>imgui\backend</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui\imgui-1.90\imconfig.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui\imgui-1.90\imgui.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui\imgui-1.90\imgui_internal.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui\imgui-1.90\imstb_rectpack.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui\imgui-1.90\imstb_textedit.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui\imgui-1.90\imstb_truetype.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sfml\imgui-sfml-2.6\imgui-SFML.h">
+      <Filter>imgui\sfml</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sfml\imgui-sfml-2.6\imgui-SFML_export.h">
+      <Filter>imgui\sfml</Filter>
+    </ClInclude>
+    <ClInclude Include="heatmap.h">
+      <Filter>libheatmap</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\input\inp.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="..\input\inp2.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
     <ClInclude Include="Search.h">
       <Filter>Header Files</Filter>
     </ClInclude>

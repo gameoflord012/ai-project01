@@ -80,25 +80,6 @@ bool algorithm::search(const shared_ptr<Board> board, SearchResultData& resultDa
             break;
         }
 
-        /* bool allAgentsArrived = true;
-
-         for (int i = 0; i < MAX_AGENT_COUNT; i++)
-         {
-             if (statePtr->agents[i].desiredTargets.size() > 0)
-             {
-                 allAgentsArrived = false;
-                 break;
-             }
-         }
-
-         if (allAgentsArrived)
-         {
-             resultData.finalState = statePtr;
-             isPathFound = true;
-             break;
-         }*/
-
-
 #pragma endregion
 
 #pragma region PROCESS_NEXT_STATE
@@ -289,4 +270,4 @@ bool algorithm::read(shared_ptr<Board>& board, const char* filepath)
 #pragma endregion   
 }
 
-bool global::use_heuristic = false;
+bool algorithm::use_heuristic = false;

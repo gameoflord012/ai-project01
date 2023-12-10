@@ -8,6 +8,10 @@
 
 #define DEFAULT_INPUT_PATH "../input/input4-level3.txt"
 
+#define WINDOW_WIDTH 800
+#define WINDOW_HEIGHT 600
+#define WINDOW_TITLE "Project01"
+
 #define MAX_BOARD_HEIGHT 10
 #define MAX_AGENT_COUNT 9
 #define MAX_KEY_COUNT 9

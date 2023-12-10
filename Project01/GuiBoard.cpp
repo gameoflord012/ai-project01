@@ -30,6 +30,8 @@ void GuiBoard::drawUi(sf::RenderWindow& window)
 	// Button says Next
 	ImGui::SetNextWindowPos(ImVec2(window.getSize().x - ImGui::GetWindowWidth(), 0), ImGuiCond_Always);
 	ImGui::Begin("Toolbox", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+	ImGui::Text("Scroll to zoom");
+	ImGui::Text("Use arrow keys to move");
 
 	// This toolbox shall do these tasks:
 	// 1. Change current state
@@ -418,8 +420,8 @@ void GuiBoard::generateHeatMap()
 
 void GuiBoard::run()
 {
-	int windowWidth = 1920;
-	int windowHeight = 1080;
+	int windowWidth = WINDOW_WIDTH;
+	int windowHeight = WINDOW_HEIGHT;
 
 	float dt;
 	float viewSpeed = 300.f;

@@ -6,7 +6,7 @@
 	#define SEARCH_API __declspec(dllimport)
 #endif // EXPORT
 
-#define DEFAULT_INPUT_PATH "../input/input4-level3.txt"
+#define DEFAULT_INPUT_PATH "../input/inp.txt"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600

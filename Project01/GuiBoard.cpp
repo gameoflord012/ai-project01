@@ -310,7 +310,7 @@ int main()
 
 	try
 	{
-		if (algorithm::read(board, "../input/input1-level3.txt") == false)
+		if (algorithm::read(board, DEFAULT_INPUT_PATH) == false)
 		{
 			throw "Cannot read file";
 		}

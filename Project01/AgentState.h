@@ -7,7 +7,7 @@
 
 struct AgentState
 {
-	int index = 0; // 1d position in board
+	int index = -1; // 1d position in board
 	int keyMask = 0; // 1001 key 0 and key 3
 	int point = 0;
 

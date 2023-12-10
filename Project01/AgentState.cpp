@@ -11,12 +11,12 @@
 
 bool AgentState::operator==(const AgentState& other) const
 {
-    bool isEqual =
-        index == other.index and
+    if (not
+        (index == other.index and
         keyMask == other.keyMask and
-        point == other.point;
+        point == other.point)) return false;
 
-    if (desiredTargets.size() != other.desiredTargets.size())
+    /*if (desiredTargets.size() != other.desiredTargets.size())
     {
         return false;
     }
@@ -28,9 +28,21 @@ bool AgentState::operator==(const AgentState& other) const
             isEqual = false;
             break;
         }
-    }
+    }*/
 
-    return isEqual;
+    return true;
+}
+
+unsigned int AgentState::operator()(const AgentState& agents) const {
+    unsigned int hashValue = 0;
+
+    hash_combine(hashValue, agents.index);
+    hash_combine(hashValue, agents.keyMask);
+    hash_combine(hashValue, agents.point);
+
+    //for (int e : agents.desiredTargets) hash_combine(hashValue, e);
+
+    return hashValue;
 }
 
 float AgentState::get_heuristic_value(const Board& board) const
@@ -48,22 +60,10 @@ float AgentState::get_heuristic_value(const Board& board) const
             h_distance += board.estimate_distance(desire_index, index) * DESIRE_TARGET_DISTANCE_MOD;
         }
 
-        h_distance += board.estimate_distance(index, desiredTargets.back());
+        h_distance += board.estimate_distance(index, desiredTargets.back(), true);
     }
 
     h_value = h_distance - h_point * AGENT_POINT_MOD;
 
     return h_value; // khoang cach cua agent toi cac desire_target
-}
-
-unsigned int AgentState::operator()(const AgentState& agents) const {
-    unsigned int hashValue = 0;
-
-    hash_combine(hashValue, agents.index);
-    hash_combine(hashValue, agents.keyMask);
-    hash_combine(hashValue, agents.point);
-
-    for (int e : agents.desiredTargets) hash_combine(hashValue, e);
-
-    return hashValue;
 }

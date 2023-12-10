@@ -1,6 +1,7 @@
 #include "Config.h"
 
 #include <vector>
+#include <assert.h>
 
 #include "SearchState.h"
 #include "Search.h"
@@ -36,25 +37,13 @@ float SearchState::get_heuristice_value() const
 
     float h_value = time;
 
-    for (int i = 0; i < MAX_AGENT_COUNT; i++)
+    for (int i = 0; i < MAX_AGENT_COUNT; i++) if(agents[i].index != -1)
     {
         float mod = i == 0 ? MAIN_AGENT_SCALE : SUB_AGENT_SCALE;
         h_value += agents[i].get_heuristic_value(*board) * mod;
     }
 
     return h_value; // time + tong heuristic cua agents
-}
-
-unsigned int SearchState::operator()(const SearchState& searchState)
-{
-    unsigned int hashValue = 0;
-
-    for (int i = 0; i < MAX_AGENT_COUNT; i++)
-    {
-        hash_combine(hashValue, searchState.agents[i]);
-    }
-
-    return hashValue;
 }
 
 bool SearchState::operator()(const SearchState& a, const SearchState& b) const
@@ -79,7 +68,7 @@ void SearchState::print_state(bool exclude_unchanged_state) const
     printf("\n==================================================");
 }
 
-void SearchState::trace_state(std::vector<SearchState>& result, shared_ptr<SearchState> statePtr)
+void SearchState::trace_state(std::vector<SearchState>& result, const shared_ptr<SearchState>& statePtr)
 {
     if (not statePtr->parent.expired())
         trace_state(result, statePtr->parent.lock());
@@ -91,7 +80,7 @@ void SearchState::trace_state(std::vector<SearchState>& result, shared_ptr<Searc
 
 bool SearchState::operator==(const SearchState& other) const
 {
-    for (int i = 0; i < MAX_AGENT_COUNT; i++)
+    for (int i = 0; i < MAX_AGENT_COUNT; i++) if(agents[i].index != -1)
     {
         if (not(agents[i] == other.agents[i]))
         {
@@ -105,6 +94,20 @@ bool SearchState::operator==(const SearchState& other) const
     }
 
     return true;
+}
+
+unsigned int SearchState::operator()(const SearchState& searchState) const
+{
+    unsigned int hashValue = 0;
+
+    for (int i = 0; i < MAX_AGENT_COUNT; i++) if (agents[i].index != -1)
+    {
+        hash_combine(hashValue, searchState.agents[i]);
+    }
+
+    hash_combine(hashValue, time % MAX_AGENT_COUNT);
+
+    return hashValue;
 }
 
 vector<SearchState> SearchResultData::get_path(bool exclude_unchanged_state)

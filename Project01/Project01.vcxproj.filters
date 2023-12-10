@@ -25,6 +25,9 @@
     <Filter Include="imgui\sfml">
       <UniqueIdentifier>{d7a6a89a-0552-4c27-a17f-dc71f9b03d9c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="libheatmap">
+      <UniqueIdentifier>{23c039ea-0677-4575-b105-c90625cd3cb9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SearchState.cpp">
@@ -77,6 +80,9 @@
     </ClCompile>
     <ClCompile Include="Search.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="heatmap.c">
+      <Filter>libheatmap</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -133,6 +139,9 @@
     </ClInclude>
     <ClInclude Include="include\sfml\imgui-sfml-2.6\imgui-SFML_export.h">
       <Filter>imgui\sfml</Filter>
+    </ClInclude>
+    <ClInclude Include="heatmap.h">
+      <Filter>libheatmap</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

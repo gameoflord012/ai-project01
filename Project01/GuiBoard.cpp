@@ -49,6 +49,8 @@ void GuiBoard::drawUi(sf::RenderWindow& window)
 
 			ImGui::Text("Solution found");
 			ImGui::Text("Slide the bar to change state");
+			score = 100 - resultData.getPathCost();
+			ImGui::Text("Path Cost score: %d", score);
 
 			if (ImGui::Button("To Next State"))
 			{
@@ -207,20 +209,21 @@ void GuiBoard::drawBoard(sf::RenderWindow& window)
 				sf::Text index;
 				index.setFont(font);
 				index.setCharacterSize(15);
-				index.setFillColor(sf::Color(23,23,23));
+				index.setFillColor(sf::Color(23, 23, 23));
 				index.setStyle(sf::Text::Bold);
 				index.setPosition(pos_x, pos_y);
 				index.setString(indexText);
 				window.draw(index);
 				indexNo++;
+
 			}
 		}
 	}
 }
 
-int GuiBoard::drawHeatMap(sf::RenderWindow& window)
+int GuiBoard::drawHeatMap()
 {
-	const char* pythonScript = "heatmap.py";
+	const char* pythonScript = "heatmap.py -heat ./heatmap.txt";
 	std::string command = "python " + std::string(pythonScript);
 	int result = system(command.c_str());
 
@@ -345,6 +348,22 @@ void GuiBoard::generateHeatMap()
 		}
 	}
 
+	for (int k = 0; k < nFloors; k++)
+	{
+		for (int i = 0; i < nRows; i++)
+		{
+			for (int j = 0; j < nCols; j++)
+			{
+				int value = board->getBoardValue(Position({ i, j, k }));
+
+				if (value == OBSTACLE)
+				{
+					heatMap[board->getIndex(Position({ i, j, k }))] = -1;
+				}
+			}
+		}
+	}
+
 	// Write to file
 	FILE* outputFile;
 	if (fopen_s(&outputFile, "./heatmap.txt", "w") != 0)
@@ -356,7 +375,7 @@ void GuiBoard::generateHeatMap()
 	fprintf(outputFile, "%d, %d\n", nRows, nCols);
 	for (int k = 0; k < nFloors; k++)
 	{
-		fprintf(outputFile, "[Floor%d]\n", k + 1);
+		fprintf(outputFile, "[floor%d]\n", k + 1);
 		for (int i = 0; i < nRows; i++)
 		{
 			for (int j = 0; j < nCols; j++)
@@ -366,6 +385,10 @@ void GuiBoard::generateHeatMap()
 				if (value > 0)
 				{
 					fprintf(outputFile, "%d", value);
+				}
+				else if (value == -1)
+				{
+					fprintf(outputFile, "-1");
 				}
 				else
 				{
@@ -378,10 +401,19 @@ void GuiBoard::generateHeatMap()
 			}
 			fprintf(outputFile, "\n");
 		}
-		fprintf(outputFile, "\n");
+		// fprintf(outputFile, "\n");
 	}
+	printf("Heatmap file generated");
 
 	fclose(outputFile);
+	if (drawHeatMap())
+	{
+		printf("Cannot export heatmap");
+	}
+	else
+	{
+		printf("Heatmap exported");
+	}
 }
 
 void GuiBoard::run()

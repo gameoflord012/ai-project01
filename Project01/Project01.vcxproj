@@ -155,6 +155,7 @@
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="GuiBoard.cpp" />
     <ClCompile Include="GuiBoard.h" />
+    <ClCompile Include="heatmap.c" />
     <ClCompile Include="include\imgui\imgui-1.90\backends\imgui_impl_glfw.cpp" />
     <ClCompile Include="include\imgui\imgui-1.90\backends\imgui_impl_opengl3.cpp" />
     <ClCompile Include="include\imgui\imgui-1.90\imgui.cpp" />
@@ -174,6 +175,7 @@
     <ClInclude Include="Board.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="HashUtils.h" />
+    <ClInclude Include="heatmap.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="include\imgui\imgui-1.90\backends\imgui_impl_glfw.h" />
     <ClInclude Include="include\imgui\imgui-1.90\backends\imgui_impl_opengl3.h" />

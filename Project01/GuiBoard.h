@@ -60,7 +60,7 @@ public:
 	GuiBoard(const shared_ptr<Board> board, SearchResultData resultData);
 
 	void drawBoard(sf::RenderWindow& window);
-	int drawHeatMap(sf::RenderWindow& window);
+	int drawHeatMap();
 	void drawUi(sf::RenderWindow& window);
 
 	void updateBoard();
@@ -91,6 +91,8 @@ private:
 	int textMargin = cellSize / 3;
 	int cellMargin = 20;
 	int cellBorder = 5;
+
+	int score = 0;
 
 	bool isHeatmapButtonClicked = false;
 

@@ -456,7 +456,7 @@ void GuiBoard::run()
 
 	sf::Event event;
 
-	sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Project 01 - KAT GUI");
+	sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), WINDOW_TITLE);
 	window.setFramerateLimit(60);
 	ImGui::SFML::Init(window);
 

@@ -1,4 +1,5 @@
 #include "Config.h"
+#include "Helpers.h"
 
 #ifndef RANDOM_SEED
 #define RANDOM_SEED -1
@@ -6,5 +7,5 @@
 
 namespace global
 {
-	extern unsigned int random_seed_value = RANDOM_SEED;
+	unsigned int random_seed_value = RANDOM_SEED;
 }

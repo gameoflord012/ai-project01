@@ -27,7 +27,7 @@ SearchState::SearchState(const shared_ptr<Board> board)
     parent.reset();
 }
 
-float SearchState::get_heuristice_value()
+float SearchState::get_heuristice_value() const
 {
     if (not algorithm::use_heuristic)
     {
@@ -59,7 +59,7 @@ unsigned int SearchState::operator()(const SearchState& searchState)
 
 bool SearchState::operator()(const SearchState& a, const SearchState& b) const
 {
-    return a.time > b.time;
+    return a.get_heuristice_value() > b.get_heuristice_value();
 }
 
 void SearchState::print_state(bool exclude_unchanged_state) const

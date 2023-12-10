@@ -30,7 +30,7 @@ SEARCH_API struct SearchState
     weak_ptr<SearchState> parent;
     shared_ptr<Board> board;
 
-    float get_heuristice_value();
+    float get_heuristice_value() const;
 
     unsigned int operator()(const SearchState& searchState);
     bool operator==(const SearchState& other) const;

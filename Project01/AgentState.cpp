@@ -33,7 +33,7 @@ bool AgentState::operator==(const AgentState& other) const
     return isEqual;
 }
 
-float AgentState::get_heuristic_value(const Board& board)
+float AgentState::get_heuristic_value(const Board& board) const
 {
     float h_value = 0;
 

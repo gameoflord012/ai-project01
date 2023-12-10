@@ -163,7 +163,7 @@
     <ClCompile Include="include\imgui\imgui-1.90\imgui_tables.cpp" />
     <ClCompile Include="include\imgui\imgui-1.90\imgui_widgets.cpp" />
     <ClCompile Include="include\sfml\imgui-sfml-2.6\imgui-SFML.cpp" />
-    <ClCompile Include="helper.cpp" />
+    <ClCompile Include="Helper.cpp" />
     <ClCompile Include="Position.cpp" />
     <ClCompile Include="Search.cpp" />
     <ClCompile Include="SearchState.cpp" />

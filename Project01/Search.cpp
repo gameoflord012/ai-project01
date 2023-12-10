@@ -270,4 +270,4 @@ bool algorithm::read(shared_ptr<Board>& board, const char* filepath)
 #pragma endregion   
 }
 
- extern bool algorithm::use_heuristic = false;
+bool algorithm::use_heuristic = false;

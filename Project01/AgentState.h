@@ -16,5 +16,5 @@ struct AgentState
 	bool operator==(const AgentState& other) const;
 	unsigned int operator()(const AgentState& agents) const;
 
-	float get_heuristic_value(const Board& board);
+	float get_heuristic_value(const Board& board) const;
 };
